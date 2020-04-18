@@ -46,6 +46,8 @@ analysis <- bind_rows(
   Chiapas %>% mutate(place = "Chiapas"),
   NuevoLeon %>% mutate(place = "Nuevo Leon")
 )
+
+saveRDS(analysis, "./data/chiapas_leon.rds")
 ```
 
 
