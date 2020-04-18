@@ -4,4 +4,4 @@ library(shinythemes)
 library(plotly)
 
 
-mexico <- read_rds("./data/chiapas_leon.rds")
+mexico <- read_rds("./data/analysis.rds")
