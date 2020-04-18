@@ -25,27 +25,34 @@ library(readxl)
 ```
 
 # Info
-Data from Touchton, Michael <miketouchton@miami.edu> Friday, April 17, 2020 at 9:08 PM A few updates
-Chiapas and Nuevo Leon
+Data from Touchton, Michael <miketouchton@miami.edu> Saturday, April 18, 2020 at 10:03 AM A few updates
+Chiapas, Nuevo Leon, Veracruz
 
 ## Pre-processing
 The bottom of the sheets (total and legends were removed)
+The first column was forced to be text using Data>Text To Column in Excel
+Ray was added to the souce column for Veracruz and Nuevo Leon
 
 ## Notes:
 Written approval to put sheets on web is pending
 
 ```{r}
-Chiapas <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon.xlsx", sheet = "Chiapas")
-NuevoLeon <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon.xlsx", sheet = "Nuevo Leon")
+Chiapas <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon3.xlsx", sheet = "Chiapas")
+NuevoLeon <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon3.xlsx", sheet = "Nuevo Leon")
+Veracruz <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon3.xlsx", sheet = "Veracruz")
 
 setdiff(names(Chiapas), names(NuevoLeon)) 
-setdiff(names(NuevoLeon)) 
+setdiff(names(NuevoLeon), names(Chiapas)) 
+setdiff(names(Chiapas), names(Veracruz)) 
 
 
 analysis <- bind_rows(
   Chiapas %>% mutate(place = "Chiapas"),
-  NuevoLeon %>% mutate(place = "Nuevo Leon")
+  NuevoLeon %>% mutate(place = "Nuevo Leon"),
+  Veracruz %>% mutate(place = "Veracruz")
 )
+
+write_rds(analysis, "./data/analysis.rds")
 ```
 
 
