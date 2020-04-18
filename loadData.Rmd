@@ -1,0 +1,51 @@
+---
+title: "Load Excel"
+author: "Raymond R. Balise"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    df_print: kable
+    toc: true
+    config:
+      toc:
+        collapsed: 2
+    toc_depth: 4
+    toc_float: true
+    
+    theme: default
+    highlight: tango
+---
+
+```{r setup, include=FALSE, message=FALSE}
+library(conflicted)
+suppressMessages(conflict_prefer("filter", "dplyr"))
+suppressPackageStartupMessages(library(tidyverse))
+
+library(readxl)
+```
+
+# Info
+Data from Touchton, Michael <miketouchton@miami.edu> Friday, April 17, 2020 at 9:08 PM A few updates
+Chiapas and Nuevo Leon
+
+## Pre-processing
+The bottom of the sheets (total and legends were removed)
+
+## Notes:
+Written approval to put sheets on web is pending
+
+```{r}
+Chiapas <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon.xlsx", sheet = "Chiapas")
+NuevoLeon <- read_xlsx("./data/Copy of Update Chiapas.Nuevo Leon.xlsx", sheet = "Nuevo Leon")
+
+setdiff(names(Chiapas), names(NuevoLeon)) 
+setdiff(names(NuevoLeon)) 
+
+
+analysis <- bind_rows(
+  Chiapas %>% mutate(place = "Chiapas"),
+  NuevoLeon %>% mutate(place = "Nuevo Leon")
+)
+```
+
+
