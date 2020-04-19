@@ -46,3 +46,6 @@ vignettes/*.pdf
 
 # Data
 data/
+
+# Output
+*.html
