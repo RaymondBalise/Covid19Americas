@@ -40,6 +40,8 @@ analysis <- read_stata("./data/Mexico COVID-19 April 15.dta") %>%
   rename(`Days Since the first case (in Mexico)`  = Days) %>% 
   rename(`Total Cases`  = Total_Cases) %>% 
   rename(`Policy Index Adjusted for Time` = Policy_Index_Adjusted_Time) %>% 
+  rename(`Deaths/ICU Bed` = Deaths_per_ICUbed) %>% 
+  rename(`Cases per capita` = Cases_per_capita) %>% 
   mutate(State_Name = stri_encode(State_Name, "", "UTF-8")) %>% # accents
   mutate(`State Name` = case_when(State_Name == "Michoac�n" ~ "Michoacán",
                                 State_Name == "Nuevo Le�n" ~ "Nuevo León",
@@ -50,10 +52,7 @@ analysis <- read_stata("./data/Mexico COVID-19 April 15.dta") %>%
 
 write_rds(analysis, "./data/analysis.rds")
 
-#mexico_states <- 
-#  analysis %>% 
-#  select(State_Name) %>% 
-#  unique()
+
 ```
 
 
