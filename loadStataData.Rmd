@@ -37,7 +37,7 @@ Written approval to put sheets on web is pending
 
 
 analysis <- read_stata("./data/Mexico COVID-19 April 15.dta") %>% 
-  rename(`Days Since the first case (in Mexico)`  = Days) %>% 
+  rename(`Days Since the First Case (in Mexico)`  = Days) %>% 
   rename(`Total Cases`  = Total_Cases) %>% 
   rename(`Policy Index Adjusted for Time` = Policy_Index_Adjusted_Time) %>% 
   rename(`Deaths/ICU Bed` = Deaths_per_ICUbed) %>% 

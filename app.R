@@ -3,7 +3,7 @@ source("global.R")
 ui <- navbarPage(
   
   theme = shinytheme("simplex"),
-  title = h4("COVID-19 Mexico"),
+  title = "COVID-19 Mexico",
   # ----------------------
   # TAB 1 : HOME PAGE
   # ----------------------
@@ -22,15 +22,19 @@ ui <- navbarPage(
   ),
   # ----------------------
   # TAB 2 : SUMMARY PAGE
-  # ----------------------
+  # ----------------------  
   tabPanel(
     h4("Summary"),
     fluidRow(
-      h1(strong("Summary of Index"), align = "center", style = "color: black")
+      h1(strong("Summary"), align = "center", style = "color: black")
     ),
     br(),
     fluidRow(
-      plotlyOutput("summaryIndexPlot",height = "200%"),
+      plotlyOutput("summaryIndexPlot",height = "200%")),    
+    br(),    
+    br(),    
+    br(),
+    fluidRow(
       plotlyOutput("summaryBedPlot",height = "200%")
    )
     
@@ -113,7 +117,7 @@ server <- function(input, output, session) {
       ggtitle("Policy Index Through Time") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank()) +
-      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+      geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Policy Index Adjusted for Time`, 
                      group = `State Name`,
                      color = `State Name`,
@@ -129,7 +133,7 @@ server <- function(input, output, session) {
       ggtitle("Deaths/ICU Beds Through Time") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank()) +
-      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+      geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Deaths/ICU Bed`, 
                      group = `State Name`,
                      color = `State Name`,
@@ -150,13 +154,13 @@ server <- function(input, output, session) {
       ggtitle("Index through time") +
       theme_few(base_size = 25) +
       geom_line(data = place, 
-                aes(x=`Days Since the first case (in Mexico)`, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
                     y = `Policy Index Adjusted for Time`, 
                     group = `State Name`), 
                 color = "orange",
                 size = 2) +
       geom_line(data = ref, 
-                aes(x=`Days Since the first case (in Mexico)`, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
                     y = `Policy Index Adjusted for Time`, 
                     group = `State Name`), 
                 color = "gray", 
@@ -176,11 +180,11 @@ server <- function(input, output, session) {
       theme_few(base_size = 25) +
       theme(legend.title = element_blank()) +
       geom_point(data = place, 
-                 aes(x=`Days Since the first case (in Mexico)`, 
+                 aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Cases per capita`, group = `State Name`), 
                  color = "orange") +
       geom_smooth(data = ref, 
-                  aes(x=`Days Since the first case (in Mexico)`, 
+                  aes(x=`Days Since the First Case (in Mexico)`, 
                       y = `Cases per capita`, group = `State Name`),
                   method = 'loess',
                   formula = 'y ~ x', 
@@ -215,12 +219,12 @@ server <- function(input, output, session) {
     x <- ggplot() + 
       #theme_few() +
       geom_line(data = State_Name1(), 
-                aes(x=`Days Since the first case (in Mexico)`, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
                     y = `Policy Index Adjusted for Time`, group = `State Name`), color = "orange") +
       geom_text(data = State_Name1(), x = 45, y = label1_pos + 5, 
                 label = state1_label, color = "orange") +
       geom_line(data = State_Name2(), 
-                aes(x=`Days Since the first case (in Mexico)`, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
                     y = `Policy Index Adjusted for Time`, group = `State Name`), color = "gray") +
       geom_text(data = State_Name2(), x = 45, y = label2_pos + 5, 
                 label = state2_label, color = "gray") +
