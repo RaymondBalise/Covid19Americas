@@ -38,20 +38,37 @@ library(plotly)
 # Index
 ```{r makeData}
 analysis <- read_rds("data/analysis.rds") %>% 
-  arrange(State_Name, `Days Since the first case (in Mexico)`) 
+  arrange(State_Name, `Days Since the first case (in Mexico)`)
 ```
 
 
 ```{r plotIndex}
+  gg <- ggplot(data = analysis) + 
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Policy Index Adjusted for Time`, 
+                     group = `State Name`,
+                     color = `State Name`,
+                     shape = 4)) +
+      scale_shape_identity() 
 
-x <- ggplot() + 
-  theme_few(base_size = 25) +
-  geom_point(data = analysis, 
-             aes(x=`Days Since the first case (in Mexico)`, 
-                 y = `Policy Index Adjusted for Time`, group = State_Name)) 
-
-ggplotly(x)
-
+    ggplotly(gg, tooltip=c("x", "y", "group"))
 ```
 
 
+
+```{r plotIndex}
+  x <- ggplot(data = analysis) + 
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Deaths/ICU Bed`, 
+                     group = `State Name`,
+                     color = `State Name`,
+                     shape = 21)) +
+      scale_shape_identity() 
+
+    ggplotly(x, tooltip=c("x", "y", "group"))
+
+```
