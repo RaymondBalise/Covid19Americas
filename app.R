@@ -30,10 +30,9 @@ ui <- navbarPage(
     ),
     br(),
     fluidRow(
-      column(width = 12, align = "center",
-             img(src = "ttsp.jpg", height = 500, width = 800)
-      )
-    )
+      plotlyOutput("summaryIndexPlot",height = "200%"),
+      plotlyOutput("summaryBedPlot",height = "200%")
+   )
     
   ),
   # ----------------------
@@ -46,9 +45,13 @@ ui <- navbarPage(
     ),
     br(),
     fluidRow(
-      column(width = 12, align = "center",
-             img(src = "ttsp.jpg", height = 500, width = 800)
-      )
+      selectInput(inputId = "refPlace",
+                  label = "Select a State:",
+                  choices = mexico$`State Name`)
+    ),
+    fluidRow(
+      plotOutput("indexPlot"),
+      plotOutput("casePlot")
     )
     
   ),
@@ -99,10 +102,97 @@ server <- function(input, output, session) {
     mexico %>% 
       filter(`State Name` == input$state1)
   })
+  
   State_Name2 <- reactive({
     mexico %>% 
       filter(`State Name` == input$state2)
   })
+  
+  output$summaryIndexPlot <- renderPlotly({
+    gg <- ggplot(data = mexico) + 
+      ggtitle("Policy Index Through Time") +
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Policy Index Adjusted for Time`, 
+                     group = `State Name`,
+                     color = `State Name`,
+                     shape = 4)) +
+      scale_shape_identity() +
+      scale_y_continuous(sec.axis = sec_axis(~ . * 1000, name = "Deaths per ICUbed")) 
+    
+    ggplotly(gg, tooltip=c("x", "y", "group"))
+  })
+  
+  output$summaryBedPlot <- renderPlotly({
+    gg <- ggplot(data = mexico) + 
+      ggtitle("Deaths/ICU Beds Through Time") +
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Deaths/ICU Bed`, 
+                     group = `State Name`,
+                     color = `State Name`,
+                     shape = 21)) +
+      scale_shape_identity() 
+    
+    ggplotly(gg, tooltip=c("x", "y", "group"))
+  })
+  
+  
+  output$indexPlot <- renderPlot({
+    # should be reactive
+    place <- mexico %>% 
+      filter(`State Name` == input$refPlace) %>% 
+      filter(!is.na(`Policy Index Adjusted for Time`))
+    
+    ggplot() + 
+      ggtitle("Index through time") +
+      theme_few(base_size = 25) +
+      geom_line(data = place, 
+                aes(x=`Days Since the first case (in Mexico)`, 
+                    y = `Policy Index Adjusted for Time`, 
+                    group = `State Name`), 
+                color = "orange",
+                size = 2) +
+      geom_line(data = ref, 
+                aes(x=`Days Since the first case (in Mexico)`, 
+                    y = `Policy Index Adjusted for Time`, 
+                    group = `State Name`), 
+                color = "gray", 
+                size = 2) +
+      geom_text(data = ref, x = 49, y = 17, label = "Chiapas", color = "gray") +
+      geom_text(data = ref, x = 48.5, y = 45, label = "Nuevo Leon", color = "gray") +
+      ylim (0, 45) 
+  }) 
+  
+  output$casePlot <- renderPlot({
+    place <- mexico %>% 
+      filter(`State Name` == input$refPlace) %>% 
+      filter(!is.na(`Policy Index Adjusted for Time`))
+    
+    ggplot() + 
+      ggtitle("Cases through time") +
+      theme_few(base_size = 25) +
+      theme(legend.title = element_blank()) +
+      geom_point(data = place, 
+                 aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Cases per capita`, group = `State Name`), 
+                 color = "orange") +
+      geom_smooth(data = ref, 
+                  aes(x=`Days Since the first case (in Mexico)`, 
+                      y = `Cases per capita`, group = `State Name`),
+                  method = 'loess',
+                  formula = 'y ~ x', 
+                  color = "gray",
+                  se = FALSE, 
+                  size = 2) +
+      geom_text(data = ref, x = 49, y = 7, label = "Chiapas", color = "gray") +
+      geom_text(data = ref, x = 48.5, y = 22, label = "Nuevo Leon", color = "gray")
+  }) 
+  
+  
+  
   
   output$plot1 <- renderPlot({
     ggplot(State_Name1()) +
