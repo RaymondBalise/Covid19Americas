@@ -21,10 +21,42 @@ ui <- navbarPage(
     
   ),
   # ----------------------
-  # TAB 2 : PLOTS
+  # TAB 2 : SUMMARY PAGE
   # ----------------------
   tabPanel(
-    h4("Plots"),
+    h4("Summary"),
+    fluidRow(
+      h1(strong("Summary of Index"), align = "center", style = "color: black")
+    ),
+    br(),
+    fluidRow(
+      column(width = 12, align = "center",
+             img(src = "ttsp.jpg", height = 500, width = 800)
+      )
+    )
+    
+  ),
+  # ----------------------
+  # TAB 3 : SINGLE STATE PAGE
+  # ----------------------
+  tabPanel(
+    h4("Single State"),
+    fluidRow(
+      h1(strong("Summary of a Single State"), align = "center", style = "color: black")
+    ),
+    br(),
+    fluidRow(
+      column(width = 12, align = "center",
+             img(src = "ttsp.jpg", height = 500, width = 800)
+      )
+    )
+    
+  ),
+  # ----------------------
+  # TAB 4 : PLOTS
+  # ----------------------
+  tabPanel(
+    h4("Multiple States"),
     column(width = 6,
            fluidRow(
              selectInput(inputId = "state1",
@@ -53,7 +85,7 @@ ui <- navbarPage(
   ),
   
   # ----------------------
-  # TAB 3 : MAP
+  # TAB 5 : MAP
   # ----------------------
   
   tabPanel(
