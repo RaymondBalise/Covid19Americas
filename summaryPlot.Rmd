@@ -1,0 +1,74 @@
+---
+title: "Reference Plot "
+author: "Raymond R. Balise"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    df_print: kable
+    toc: true
+    config:
+      toc:
+        collapsed: 2
+    toc_depth: 4
+    toc_float: true
+    
+    theme: default
+    highlight: tango
+---
+
+```{r setup, include=FALSE, message=FALSE}
+library(conflicted)
+suppressMessages(conflict_prefer("filter", "dplyr"))
+suppressPackageStartupMessages(library(tidyverse))
+
+library(readxl)
+
+library(ggthemes)
+
+library(plotly)
+
+```
+
+# Info
+
+
+## Notes:
+
+
+# Index
+```{r makeData}
+analysis <- read_rds("data/analysis.rds") %>% 
+  arrange(State_Name, `Days Since the first case (in Mexico)`)
+```
+
+
+```{r plotIndex}
+  gg <- ggplot(data = analysis) + 
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Policy Index Adjusted for Time`, 
+                     group = `State Name`,
+                     color = `State Name`,
+                     shape = 4)) +
+      scale_shape_identity() 
+
+    ggplotly(gg, tooltip=c("x", "y", "group"))
+```
+
+
+
+```{r plotIndex}
+  x <- ggplot(data = analysis) + 
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x=`Days Since the first case (in Mexico)`, 
+                     y = `Deaths/ICU Bed`, 
+                     group = `State Name`,
+                     color = `State Name`,
+                     shape = 21)) +
+      scale_shape_identity() 
+
+    ggplotly(x, tooltip=c("x", "y", "group"))
+
+```
