@@ -31,9 +31,13 @@ library(ggthemes)
 
 ## Notes:
 
-```{r}
-analysis <- read_rds("./data/analysis.rds") %>% 
-  arrange(place, `Days Since the first case (in Mexico)`)
+
+# Index
+```{r makeData}
+analysis <- read_rds("data/analysis.rds") %>% 
+  arrange(place, `Days Since the first case (in Mexico)`) %>% 
+  mutate(place = factor(place)) %>% 
+  mutate(place = factor(place, levels = rev(levels(place))))
 
 ref <- analysis %>% 
   filter(place %in% c("Chiapas", "Nuevo Leon")) %>% 
@@ -43,9 +47,13 @@ place <- analysis %>%
   filter(place %in% c("Veracruz")) %>% 
   filter(!is.na(`Index Adjusted for Time`))
 
-  
+```
+
+
+```{r plotIndex}
+
 ggplot() + 
-  theme_few() +
+  theme_few(base_size = 25) +
   geom_line(data = place, 
              aes(x=`Days Since the first case (in Mexico)`, 
                  y = `Index Adjusted for Time`, group = place), color = "orange") +
@@ -58,4 +66,17 @@ ggplot() +
 
 ```
 
-
+# New cases
+```{r}
+ggplot() + 
+  theme_few(base_size = 25) +
+  geom_point(data = place, 
+             aes(x=`Days Since the first case (in Mexico)`, 
+                 y = `Cases per million inhabitants`, group = place), 
+             color = "orange") +
+  geom_smooth(data = ref, 
+             aes(x=`Days Since the first case (in Mexico)`, 
+                 y = `Cases per million inhabitants`, group = place, color = place),
+             method = 'loess',
+             formula = 'y ~ x') 
+```
