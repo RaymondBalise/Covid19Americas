@@ -15,7 +15,7 @@ ui <- navbarPage(
     br(),
     fluidRow(
       column(width = 12, align = "center",
-        img(src = "ttsp.jpg", height = 500, width = 800)
+        img(src = "slide.jpg", height = 500, width = 800)
         )
     )
     
