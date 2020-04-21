@@ -4,9 +4,11 @@ ui <- navbarPage(
   
   theme = shinytheme("simplex"),
   title = "COVID-19 Mexico",
-  # ----------------------
-  # TAB 1 : HOME PAGE
-  # ----------------------
+  
+  # ++++++++++++++++++++++
+  # TAB 1 : HOME PAGE ----
+  # ++++++++++++++++++++++
+    
   tabPanel(
     h4("Home"),
     fluidRow(
@@ -20,9 +22,9 @@ ui <- navbarPage(
     )
     
   ),
-  # ----------------------
-  # TAB 2 : SUMMARY PAGE
-  # ----------------------  
+  # +++++++++++++++++++++++++
+  # TAB 2 : SUMMARY PAGE ----
+  # +++++++++++++++++++++++++
   tabPanel(
     h4("Summary"),
     fluidRow(
@@ -36,18 +38,18 @@ ui <- navbarPage(
     ),
     br(),
     fluidRow(
-      plotlyOutput("summaryIndexPlot",height = "200%")),    
+      column(width = 6, offset = 3, plotlyOutput("summaryIndexPlot",height = "200%"))),    
     br(),    
     br(),    
     br(),
     fluidRow(
-      plotlyOutput("summaryBedPlot",height = "200%")
+      column(width = 6, offset = 3, plotlyOutput("summaryBedPlot",height = "200%"))
    )
     
   ),
-  # ----------------------
-  # TAB 3 : SINGLE STATE PAGE
-  # ----------------------
+  # ++++++++++++++++++++++++++++++
+  # TAB 3 : SINGLE STATE PAGE ----
+  # ++++++++++++++++++++++++++++++
   tabPanel(
     h4("Single State"),
     fluidRow(
@@ -71,9 +73,9 @@ ui <- navbarPage(
     )
     
   ),
-  # ----------------------
-  # TAB 4 : PLOTS
-  # ----------------------
+  # ++++++++++++++++++++++
+  # TAB 4 : PLOTS     ----
+  # ++++++++++++++++++++++
   tabPanel(
     h4("Multiple States"),
     column(width = 6,
@@ -103,9 +105,9 @@ ui <- navbarPage(
     )
   ),
   
-  # ----------------------
-  # TAB 5 : MAP
-  # ----------------------
+  # ++++++++++++++++++++++
+  # TAB 5 : MAP       ----
+  # ++++++++++++++++++++++
   
   tabPanel(
     h4("Map"),
@@ -114,6 +116,9 @@ ui <- navbarPage(
 )
 
 server <- function(input, output, session) {
+
+
+  
   State_Name1 <- reactive({
     mexico %>% 
       filter(`State Name` == input$state1)
@@ -123,6 +128,8 @@ server <- function(input, output, session) {
     mexico %>% 
       filter(`State Name` == input$state2)
   })
+  
+  # Summary plots / Index ----
   
   output$summaryIndexPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
@@ -146,6 +153,8 @@ server <- function(input, output, session) {
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
   
+  # Summary plots / Death Beds ----
+  
   output$summaryBedPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
       ggtitle("Deaths/ICU Beds Through Time") +
@@ -162,6 +171,7 @@ server <- function(input, output, session) {
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
   
+  # Single State Plot / Index ----
   
   output$indexPlot <- renderPlot({
     # should be reactive
@@ -189,6 +199,8 @@ server <- function(input, output, session) {
                 size = 2) +
       ylab("Policy Index Adj Time Mobility") 
   }) 
+  
+  # Single State Plot / Case Plot ----
   
   output$casePlot <- renderPlot({
     place <- mexico %>% 
@@ -218,7 +230,7 @@ server <- function(input, output, session) {
       }) 
   
   
-  
+  # Two State Plot ----
   
   output$plot1 <- renderPlot({
     ggplot(State_Name1()) +
@@ -255,6 +267,8 @@ server <- function(input, output, session) {
     
     ggplotly(x)
   }) 
+  
+  # Map ----
   
   output$map <- renderLeaflet({
     
