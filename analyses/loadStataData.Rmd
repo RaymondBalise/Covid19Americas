@@ -34,13 +34,12 @@ Data from Touchton, Michael <miketouchton@miami.edu> Saturday, Sunday, April 19,
 Written approval to put sheets on web is pending
 
 ```{r}
-
-
-analysis <- read_stata("./data/Mexico COVID-19 April 15.dta") %>% 
+analysis <- read_stata("../data/Mexico COVID-19 April 15.dta") %>% 
   rename(`Days Since the First Case (in Mexico)`  = Days) %>% 
   rename(`Total Cases`  = Total_Cases) %>% 
   rename(`Policy Index Adjusted for Time` = Policy_Index_Adjusted_Time) %>% 
   rename(`Deaths/ICU Bed` = Deaths_per_ICUbed) %>% 
+  rename(`Policy Index Adj Time Mobility` = Policy_Index_Adj_Time_Mobility) %>% 
   rename(`Cases per capita` = Cases_per_capita) %>% 
   mutate(State_Name = stri_encode(State_Name, "", "UTF-8")) %>% # accents
   mutate(`State Name` = case_when(State_Name == "Michoac�n" ~ "Michoacán",
@@ -50,8 +49,7 @@ analysis <- read_stata("./data/Mexico COVID-19 April 15.dta") %>%
                                 State_Name == "Yucat�n" ~ "Yucatán",
                                 TRUE ~ State_Name))
 
-write_rds(analysis, "./data/analysis.rds")
-
+write_rds(analysis, "../data/analysis.rds")
 
 ```
 

@@ -4,9 +4,11 @@ ui <- navbarPage(
   
   theme = shinytheme("simplex"),
   title = "COVID-19 Mexico",
-  # ----------------------
-  # TAB 1 : HOME PAGE
-  # ----------------------
+  
+  # ++++++++++++++++++++++
+  # TAB 1 : HOME PAGE ----
+  # ++++++++++++++++++++++
+    
   tabPanel(
     h4("Home"),
     fluidRow(
@@ -20,9 +22,9 @@ ui <- navbarPage(
     )
     
   ),
-  # ----------------------
-  # TAB 2 : SUMMARY PAGE
-  # ----------------------  
+  # +++++++++++++++++++++++++
+  # TAB 2 : SUMMARY PAGE ----
+  # +++++++++++++++++++++++++
   tabPanel(
     h4("Summary"),
     fluidRow(
@@ -36,18 +38,18 @@ ui <- navbarPage(
     ),
     br(),
     fluidRow(
-      plotlyOutput("summaryIndexPlot",height = "200%")),    
+      column(width = 6, offset = 3, plotlyOutput("summaryIndexPlot",height = "200%"))),    
     br(),    
     br(),    
     br(),
     fluidRow(
-      plotlyOutput("summaryBedPlot",height = "200%")
+      column(width = 6, offset = 3, plotlyOutput("summaryBedPlot",height = "200%"))
    )
     
   ),
-  # ----------------------
-  # TAB 3 : SINGLE STATE PAGE
-  # ----------------------
+  # ++++++++++++++++++++++++++++++
+  # TAB 3 : SINGLE STATE PAGE ----
+  # ++++++++++++++++++++++++++++++
   tabPanel(
     h4("Single State"),
     fluidRow(
@@ -71,9 +73,9 @@ ui <- navbarPage(
     )
     
   ),
-  # ----------------------
-  # TAB 4 : PLOTS
-  # ----------------------
+  # ++++++++++++++++++++++
+  # TAB 4 : PLOTS     ----
+  # ++++++++++++++++++++++
   tabPanel(
     h4("Multiple States"),
     column(width = 6,
@@ -103,9 +105,9 @@ ui <- navbarPage(
     )
   ),
   
-  # ----------------------
-  # TAB 5 : MAP
-  # ----------------------
+  # ++++++++++++++++++++++
+  # TAB 5 : MAP       ----
+  # ++++++++++++++++++++++
   
   tabPanel(
     h4("Map"),
@@ -114,6 +116,9 @@ ui <- navbarPage(
 )
 
 server <- function(input, output, session) {
+
+
+  
   State_Name1 <- reactive({
     mexico %>% 
       filter(`State Name` == input$state1)
@@ -124,21 +129,31 @@ server <- function(input, output, session) {
       filter(`State Name` == input$state2)
   })
   
+  # Summary plots / Index ----
+  
   output$summaryIndexPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Policy Index Through Time") +
+      ggtitle("Policy Index Adjusted for Time and Mobility Through Time") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank()) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Policy Index Adjusted for Time`, 
+                     y = `Policy Index Adj Time Mobility`, 
                      group = `State Name`,
                      color = `State Name`,
-                     shape = 4)) +
+                     shape = 4,
+                     ),
+                 size = 2) +
       scale_shape_identity() +
-      scale_y_continuous(sec.axis = sec_axis(~ . * 1000, name = "Deaths per ICUbed")) 
+      geom_smooth(aes(x=`Days Since the First Case (in Mexico)`, 
+                      y = `Policy Index Adj Time Mobility`),
+                  method = "gam",
+                  formula = y ~ s(x, bs = "cs"),  # shrinkage version of cubic spline base
+                  se=FALSE)
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
+  
+  # Summary plots / Death Beds ----
   
   output$summaryBedPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
@@ -149,44 +164,48 @@ server <- function(input, output, session) {
                      y = `Deaths/ICU Bed`, 
                      group = `State Name`,
                      color = `State Name`,
-                     shape = 21)) +
+                     shape = 21),
+                 size = 2) +
       scale_shape_identity() 
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
   
+  # Single State Plot / Index ----
   
   output$indexPlot <- renderPlot({
     # should be reactive
     place <- mexico %>% 
       filter(`State Name` == input$refPlace) %>% 
-      filter(!is.na(`Policy Index Adjusted for Time`))
+      filter(!is.na(`Policy Index Adj Time Mobility`))
     
     ggplot() + 
-      ggtitle("Index through time") +
+      ggtitle("Policy Index Adjusted for Time and Mobility Through Time") +
       theme_few(base_size = 25) +
-      geom_line(data = refIndex, 
+      geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
                 color = "gray", 
                 size = 2) + 
-      geom_line(data = refIndex, 
+      geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Largest), 
                 color = "gray", 
                 size = 2)  +
       geom_line(data = place, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adjusted for Time`), 
+                    y = `Policy Index Adj Time Mobility`), 
                 color = "orange",
                 size = 2) +
-      ylab("Policy Index Adjusted for Time") 
+      ylab("Policy Index Adj Time Mobility") 
   }) 
+  
+  # Single State Plot / Case Plot ----
   
   output$casePlot <- renderPlot({
     place <- mexico %>% 
       filter(`State Name` == input$refPlace) %>% 
-      filter(!is.na(`Policy Index Adjusted for Time`))
+      filter(!is.na(`Policy Index Adj Time Mobility`))
     
     ggplot() + 
       ggtitle("Cases through time") +
@@ -205,12 +224,13 @@ server <- function(input, output, session) {
       geom_point(data = place, 
                aes(x=`Days Since the First Case (in Mexico)`, 
                    y = `Cases per capita`), 
-               color = "orange") +
+               color = "orange",
+               size = 2) +
       ylab("Cases per capita")
       }) 
   
   
-  
+  # Two State Plot ----
   
   output$plot1 <- renderPlot({
     ggplot(State_Name1()) +
@@ -227,19 +247,19 @@ server <- function(input, output, session) {
   output$refplot <- renderPlotly({
     state1_label <- input$state1
     state2_label <- input$state2
-    label1_pos <- max(State_Name1()$`Policy Index Adjusted for Time`, na.rm = TRUE)
-    label2_pos <- max(State_Name2()$`Policy Index Adjusted for Time`, na.rm = TRUE)
+    label1_pos <- max(State_Name1()$`Policy Index Adj Time Mobility`, na.rm = TRUE)
+    label2_pos <- max(State_Name2()$`Policy Index Adj Time Mobility`, na.rm = TRUE)
     
     x <- ggplot() + 
       #theme_few() +
       geom_line(data = State_Name1(), 
                 aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adjusted for Time`, group = `State Name`), color = "orange") +
+                    y = `Policy Index Adj Time Mobility`, group = `State Name`), color = "orange") +
       geom_text(data = State_Name1(), x = 45, y = label1_pos + 5, 
                 label = state1_label, color = "orange") +
       geom_line(data = State_Name2(), 
                 aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adjusted for Time`, group = `State Name`), color = "gray") +
+                    y = `Policy Index Adj Time Mobility`, group = `State Name`), color = "gray") +
       geom_text(data = State_Name2(), x = 45, y = label2_pos + 5, 
                 label = state2_label, color = "gray") +
       ylim (0, 45) + 
@@ -247,6 +267,8 @@ server <- function(input, output, session) {
     
     ggplotly(x)
   }) 
+  
+  # Map ----
   
   output$map <- renderLeaflet({
     
