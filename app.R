@@ -3,22 +3,51 @@ source("global.R")
 ui <- navbarPage(
   
   theme = shinytheme("simplex"),
-  title = "COVID-19 Mexico",
-  
+  title = img(src = "flag.png", width = 70),
+  windowTitle = "COVID-19 Mexico",
   # ++++++++++++++++++++++
   # TAB 1 : HOME PAGE ----
   # ++++++++++++++++++++++
-    
+
   tabPanel(
-    h4("Home"),
+    h4("Inicio"),
     fluidRow(
-      h1(strong("COVID-19 Mexico"), align = "center", style = "color: black")
+      h1(strong("Observatorio de Políticas Públicas de COVID-19 
+                en América Latina"), align = "center", style = "color: black")
     ),
     br(),
+    br(),
+    br(),
     fluidRow(
-      column(width = 12, align = "center",
-        img(src = "slide.jpg", height = 500, width = 800)
-        )
+      column(width = 6,
+             align = "left",
+             br(),
+             p("Un observatorio de políticas públicas y datos de salud por 
+               estado para México por el Instituto de Estudios Avanzados de las 
+               Américas de Miami y el Departamento de Ciencias de la Salud 
+               Pública de la Facultad de Medicina Miller de la Universidad 
+               de Miami", style = "font-size: 24px")
+      ),
+      column(width = 6,
+             align = "center",
+             img(src = "um.png"),
+             h4("en colaboración con:"),
+             br(),
+             img(src = "LOGO-TAP.png"),
+             br(),
+             img(src = "dphs.png")
+      )
+    ),
+    fluidRow(),
+    fluidRow(),
+    fluidRow(),
+    br(),
+    br(),
+    br(),
+    fluidRow(
+      h6("Esto se desarrolla como una aplicación de código abierto y se 
+           publica bajo la licencia MIT", align = "center", 
+         style = "color: black")
     )
     
   ),
@@ -26,7 +55,7 @@ ui <- navbarPage(
   # TAB 2 : SUMMARY PAGE ----
   # +++++++++++++++++++++++++
   tabPanel(
-    h4("Summary"),
+    h4("El Sumario"),
     fluidRow(
       h1(strong("Summary"), align = "center", style = "color: black")
     ),
@@ -51,7 +80,7 @@ ui <- navbarPage(
   # TAB 3 : SINGLE STATE PAGE ----
   # ++++++++++++++++++++++++++++++
   tabPanel(
-    h4("Single State"),
+    h4("Estado único"),
     fluidRow(
       h1(strong("Summary of a Single State"), align = "center", style = "color: black")
     ),
@@ -77,13 +106,22 @@ ui <- navbarPage(
   # TAB 4 : PLOTS     ----
   # ++++++++++++++++++++++
   tabPanel(
-    h4("Multiple States"),
+    h4("Estado múltiple"),
     column(width = 6,
            fluidRow(
              selectInput(inputId = "state1",
                          label = "Select a State:",
                          choices = unique(mexico$`State Name`),
                          selected = "Chiapas")
+           ),
+           fluidRow(
+             checkboxGroupInput(inputId = "vars1",
+                         label = "Select Measure(s)",
+                         choices = c("Hospital Beds" = "Hospital_Beds",
+                                     "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
+                                     "ICU Beds" = "ICU_Beds",
+                                     "ICU Beds/Capita" = "ICUBeds_per_capita"),
+                         selected = "Hospital_Beds")
            ),
            fluidRow(
              plotOutput("plot1")
@@ -95,6 +133,15 @@ ui <- navbarPage(
                          label = "Select a State:",
                          choices = unique(mexico$`State Name`),
                          selected = "Veracruz")
+           ),
+           fluidRow(
+             checkboxGroupInput(inputId = "vars2",
+                                label = "Select Measure(s)",
+                                choices = c("Hospital Beds" = "Hospital_Beds",
+                                            "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
+                                            "ICU Beds" = "ICU_Beds",
+                                            "ICU Beds/Capita" = "ICUBeds_per_capita"),
+                                selected = "Hospital_Beds")
            ),
            fluidRow(
              plotOutput("plot2")
@@ -110,24 +157,13 @@ ui <- navbarPage(
   # ++++++++++++++++++++++
   
   tabPanel(
-    h4("Map"),
+    h4("La Carta"),
     leafletOutput("map", height = 900)
   )
 )
 
 server <- function(input, output, session) {
 
-
-  
-  State_Name1 <- reactive({
-    mexico %>% 
-      filter(`State Name` == input$state1)
-  })
-  
-  State_Name2 <- reactive({
-    mexico %>% 
-      filter(`State Name` == input$state2)
-  })
   
   # Summary plots / Index ----
   
@@ -229,46 +265,112 @@ server <- function(input, output, session) {
       ylab("Cases per capita")
       }) 
   
+  ##### multi-state plots#####
   
-  # Two State Plot ----
+
+  plot1_dat <- reactive({
+    req(input$state1)
+    mexico %>% 
+      filter(`State Name` == input$state1)
+  })
+  
+  plot2_dat <- reactive({
+    req(input$state2)
+    mexico %>% 
+      filter(`State Name` == input$state2) 
+  })
+
   
   output$plot1 <- renderPlot({
-    ggplot(State_Name1()) +
-      geom_bar(aes(`Total Cases`)) +
-      theme_minimal()
+    #browser()
+    p <- ggplot(data = plot1_dat()) + 
+      ggtitle("Beds Through Time") +
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                     y = input$vars1[1]),
+                 color = "red"
+      ) +
+      labs(y = "Measure")
+    
+    if(length(input$vars1) > 1){
+      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                              y = input$vars1[2]),
+                          color = "green"
+      )
+    }else if(length(input$vars1) > 2){
+      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                              y = input$vars1[3]),
+                          color = "orange"
+      )
+    }else if(length(input$vars1) > 3){
+      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                              y = input$vars1[4]),
+                          color = "blue"
+      )
+    }
+    p
   }) 
   
   output$plot2 <- renderPlot({
-    ggplot(State_Name2()) +
-      geom_bar(aes(`Total Cases`)) +
-      theme_minimal()
+
+    #browser()
+    p <- ggplot(data = plot2_dat()) + 
+      ggtitle("Beds Through Time") +
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank()) +
+      geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                     y = input$vars2[1]),
+                 color = "red"
+      ) +
+      labs(y = "Measure")
+    
+    if(length(input$vars2) > 1){
+      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                              y = input$vars2[2]),
+                          color = "green"
+      )
+    }else if(length(input$vars2) > 2){
+      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                              y = input$vars2[3]),
+                          color = "orange"
+      )
+    }else if(length(input$vars2) > 3){
+      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+                              y = input$vars2[4]),
+                          color = "blue"
+      )
+    }
+    p
   }) 
   
-  output$refplot <- renderPlotly({
-    state1_label <- input$state1
-    state2_label <- input$state2
-    label1_pos <- max(State_Name1()$`Policy Index Adj Time Mobility`, na.rm = TRUE)
-    label2_pos <- max(State_Name2()$`Policy Index Adj Time Mobility`, na.rm = TRUE)
-    
-    x <- ggplot() + 
-      #theme_few() +
-      geom_line(data = State_Name1(), 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adj Time Mobility`, group = `State Name`), color = "orange") +
-      geom_text(data = State_Name1(), x = 45, y = label1_pos + 5, 
-                label = state1_label, color = "orange") +
-      geom_line(data = State_Name2(), 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adj Time Mobility`, group = `State Name`), color = "gray") +
-      geom_text(data = State_Name2(), x = 45, y = label2_pos + 5, 
-                label = state2_label, color = "gray") +
-      ylim (0, 45) + 
-      theme_minimal()
-    
-    ggplotly(x)
-  }) 
-  
+
+  # output$refplot <- renderPlotly({
+  #   state1_label <- input$state1
+  #   state2_label <- input$state2
+  #   label1_pos <- max(plot1_dat()$`Policy Index Adjusted for Time`, na.rm = TRUE)
+  #   label2_pos <- max(plot2_dat()$`Policy Index Adjusted for Time`, na.rm = TRUE)
+  #   
+  #   x <- ggplot() + 
+  #     #theme_few() +
+  #     geom_line(data = State_Name1(), 
+  #               aes(x=`Days Since the First Case (in Mexico)`, 
+  #                   y = `Policy Index Adjusted for Time`, group = `State Name`), color = "orange") +
+  #     geom_text(data = State_Name1(), x = 45, y = label1_pos + 5, 
+  #               label = state1_label, color = "orange") +
+  #     geom_line(data = State_Name2(), 
+  #               aes(x=`Days Since the First Case (in Mexico)`, 
+  #                   y = `Policy Index Adjusted for Time`, group = `State Name`), color = "gray") +
+  #     geom_text(data = State_Name2(), x = 45, y = label2_pos + 5, 
+  #               label = state2_label, color = "gray") +
+  #     ylim (0, 45) + 
+  #     theme_minimal()
+  #   
+  #   ggplotly(x)
+  # }) 
+
   # Map ----
+
   
   output$map <- renderLeaflet({
     
