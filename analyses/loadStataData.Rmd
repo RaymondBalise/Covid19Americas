@@ -34,7 +34,7 @@ Data from Touchton, Michael <miketouchton@miami.edu> Saturday, Sunday, April 19,
 Written approval to put sheets on web is pending
 
 ```{r}
-
+analysis <- read_stata("../data/Mexico COVID-19 April 15.dta") %>% 
 
 analysis <- read_stata("./data/Mexico COVID-19 April 15.dta") %>% 
   rename(`Days Since the First Case (in Mexico)`  = Days) %>% 
