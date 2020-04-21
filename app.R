@@ -15,7 +15,7 @@ ui <- navbarPage(
     br(),
     fluidRow(
       column(width = 12, align = "center",
-        img(src = "ttsp.jpg", height = 500, width = 800)
+        img(src = "slide.jpg", height = 500, width = 800)
         )
     )
     
@@ -27,6 +27,12 @@ ui <- navbarPage(
     h4("Summary"),
     fluidRow(
       h1(strong("Summary"), align = "center", style = "color: black")
+    ),
+    fluidRow(
+      h4(strong("Double click a state name in the legend to show only it.  Double click it again to show all."), align = "center", style = "color: gray")
+    ),
+    fluidRow(
+      h4(strong("Click a state name in the legend to hide or show it."), align = "center", style = "color: gray")
     ),
     br(),
     fluidRow(
@@ -47,15 +53,21 @@ ui <- navbarPage(
     fluidRow(
       h1(strong("Summary of a Single State"), align = "center", style = "color: black")
     ),
+  
+    fluidRow(
+      h4(strong("Gray lines show the smallest or largest values acorss all states."), align = "center", style = "color: gray")
+    ),
     br(),
     fluidRow(
-      selectInput(inputId = "refPlace",
+      column(width = 6, offset = 3, 
+             selectInput(inputId = "refPlace",
                   label = "Select a State:",
-                  choices = mexico$`State Name`)
+                  choices = mexico$`State Name`,
+                  selected = 1))
     ),
     fluidRow(
-      plotOutput("indexPlot"),
-      plotOutput("casePlot")
+      column(width = 6, offset = 3, plotOutput("indexPlot")),
+      column(width = 6, offset = 3, plotOutput("casePlot"))
     )
     
   ),
@@ -153,21 +165,22 @@ server <- function(input, output, session) {
     ggplot() + 
       ggtitle("Index through time") +
       theme_few(base_size = 25) +
+      geom_line(data = refIndex, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Smallest), 
+                color = "gray", 
+                size = 2) + 
+      geom_line(data = refIndex, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Largest), 
+                color = "gray", 
+                size = 2)  +
       geom_line(data = place, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adjusted for Time`, 
-                    group = `State Name`), 
+                    y = `Policy Index Adjusted for Time`), 
                 color = "orange",
                 size = 2) +
-      geom_line(data = ref, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = `Policy Index Adjusted for Time`, 
-                    group = `State Name`), 
-                color = "gray", 
-                size = 2) +
-      geom_text(data = ref, x = 49, y = 17, label = "Chiapas", color = "gray") +
-      geom_text(data = ref, x = 48.5, y = 45, label = "Nuevo Leon", color = "gray") +
-      ylim (0, 45) 
+      ylab("Policy Index Adjusted for Time") 
   }) 
   
   output$casePlot <- renderPlot({
@@ -179,21 +192,22 @@ server <- function(input, output, session) {
       ggtitle("Cases through time") +
       theme_few(base_size = 25) +
       theme(legend.title = element_blank()) +
+      geom_line(data = refCases, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Smallest), 
+                color = "gray", 
+                size = 2) + 
+      geom_line(data = refCases, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Largest), 
+                color = "gray", 
+                size = 2)  +
       geom_point(data = place, 
-                 aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Cases per capita`, group = `State Name`), 
-                 color = "orange") +
-      geom_smooth(data = ref, 
-                  aes(x=`Days Since the First Case (in Mexico)`, 
-                      y = `Cases per capita`, group = `State Name`),
-                  method = 'loess',
-                  formula = 'y ~ x', 
-                  color = "gray",
-                  se = FALSE, 
-                  size = 2) +
-      geom_text(data = ref, x = 49, y = 7, label = "Chiapas", color = "gray") +
-      geom_text(data = ref, x = 48.5, y = 22, label = "Nuevo Leon", color = "gray")
-  }) 
+               aes(x=`Days Since the First Case (in Mexico)`, 
+                   y = `Cases per capita`), 
+               color = "orange") +
+      ylab("Cases per capita")
+      }) 
   
   
   
