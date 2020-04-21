@@ -28,6 +28,12 @@ ui <- navbarPage(
     fluidRow(
       h1(strong("Summary"), align = "center", style = "color: black")
     ),
+    fluidRow(
+      h4(strong("Double click a state name in the legend to show only it.  Double click it again to show all."), align = "center", style = "color: gray")
+    ),
+    fluidRow(
+      h4(strong("Click a state name in the legend to hide or show it."), align = "center", style = "color: gray")
+    ),
     br(),
     fluidRow(
       plotlyOutput("summaryIndexPlot",height = "200%")),    
@@ -49,19 +55,19 @@ ui <- navbarPage(
     ),
   
     fluidRow(
-      h3(strong("Gray lines show the smallest or largest values acorss all states."), align = "center", style = "color: black")
+      h4(strong("Gray lines show the smallest or largest values acorss all states."), align = "center", style = "color: gray")
     ),
     br(),
     fluidRow(
-      column(width = 10, offset = 1, 
+      column(width = 6, offset = 3, 
              selectInput(inputId = "refPlace",
                   label = "Select a State:",
                   choices = mexico$`State Name`,
                   selected = 1))
     ),
     fluidRow(
-      column(width = 10, offset = 1, plotOutput("indexPlot")),
-      column(width = 10, offset = 1, plotOutput("casePlot"))
+      column(width = 6, offset = 3, plotOutput("indexPlot")),
+      column(width = 6, offset = 3, plotOutput("casePlot"))
     )
     
   ),
