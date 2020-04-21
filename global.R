@@ -16,11 +16,11 @@ ref <- mexico %>%
   filter(`State Name` %in% c("Chiapas", "Nuevo León")) %>% 
   filter(!is.na(`Policy Index Adjusted for Time`))
 
-refIndex <- mexico %>% 
-  filter(!is.na(`Policy Index Adjusted for Time`)) %>% 
+refIndexTimeMob <- mexico %>% 
+  filter(!is.na(`Policy Index Adj Time Mobility`)) %>% 
   group_by(`Days Since the First Case (in Mexico)`) %>% 
-  summarise(Smallest = min(`Policy Index Adjusted for Time`, na.rm=TRUE), 
-            Largest = max(`Policy Index Adjusted for Time`, na.rm=TRUE))
+  summarise(Smallest = min(`Policy Index Adj Time Mobility`, na.rm=TRUE), 
+            Largest = max(`Policy Index Adj Time Mobility`, na.rm=TRUE))
 
 refCases <- mexico %>% 
   filter(!is.na(`Cases per capita`)) %>% 
