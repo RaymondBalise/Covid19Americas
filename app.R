@@ -98,7 +98,7 @@ ui <- navbarPage(
     ),
     fluidRow(
       column(width = 6, offset = 3, plotOutput("indexPlot")),
-      column(width = 6, offset = 3, plotOutput("casePlot"))
+      column(width = 6, offset = 3, plotOutput("deathPerCapitaPlot"))
     )
     
   ),
@@ -274,7 +274,7 @@ server <- function(input, output, session) {
       filter(!is.na(`Policy Index Adj Time Mobility`))
     
     ggplot() + 
-      ggtitle("Cases through time") +
+      ggtitle("Deaths per Capita Through Time") +
       theme_few(base_size = 25) +
       theme(legend.title = element_blank()) +
       geom_line(data = refDeaths, 
