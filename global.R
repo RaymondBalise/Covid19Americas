@@ -1,12 +1,19 @@
 library(shiny)
-library(tidyverse)
+
+library(conflicted)
+
+suppressMessages(conflict_prefer("filter", "dplyr"))
+suppressPackageStartupMessages(library(tidyverse))
+
 library(shinythemes)
+
+suppressMessages(conflict_prefer("last_plot", "plotly"))
 library(plotly)
 
 library(ggthemes)
 
 library(leaflet)
-
+library(sp)
 
 mexico <- read_rds("./data/analysis.rds")
 
