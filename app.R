@@ -105,52 +105,52 @@ ui <- navbarPage(
   # ++++++++++++++++++++++
   # TAB 4 : PLOTS     ----
   # ++++++++++++++++++++++
-  tabPanel(
-    h4("Estado múltiple"),
-    column(width = 6,
-           fluidRow(
-             selectInput(inputId = "state1",
-                         label = "Select a State:",
-                         choices = unique(mexico$`State Name`),
-                         selected = "Chiapas")
-           ),
-           fluidRow(
-             checkboxGroupInput(inputId = "vars1",
-                                label = "Select Measure(s)",
-                                choices = c("Hospital Beds" = "Hospital_Beds",
-                                            "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
-                                            "ICU Beds" = "ICU_Beds",
-                                            "ICU Beds/Capita" = "ICUBeds_per_capita"),
-                                selected = "Hospital_Beds")
-           ),
-           fluidRow(
-             plotOutput("plot1")
-           )
-    ),
-    column(width = 6,
-           fluidRow(
-             selectInput(inputId = "state2",
-                         label = "Select a State:",
-                         choices = unique(mexico$`State Name`),
-                         selected = "Veracruz")
-           ),
-           fluidRow(
-             checkboxGroupInput(inputId = "vars2",
-                                label = "Select Measure(s)",
-                                choices = c("Hospital Beds" = "Hospital_Beds",
-                                            "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
-                                            "ICU Beds" = "ICU_Beds",
-                                            "ICU Beds/Capita" = "ICUBeds_per_capita"),
-                                selected = "Hospital_Beds")
-           ),
-           fluidRow(
-             plotOutput("plot2")
-           ),
-           fluidRow(
-             plotlyOutput("refplot")
-           )
-    )
-  ),
+  # tabPanel(
+  #   h4("Estado múltiple"),
+  #   column(width = 6,
+  #          fluidRow(
+  #            selectInput(inputId = "state1",
+  #                        label = "Select a State:",
+  #                        choices = unique(mexico$`State Name`),
+  #                        selected = "Chiapas")
+  #          ),
+  #          fluidRow(
+  #            checkboxGroupInput(inputId = "vars1",
+  #                               label = "Select Measure(s)",
+  #                               choices = c("Hospital Beds" = "Hospital_Beds",
+  #                                           "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
+  #                                           "ICU Beds" = "ICU_Beds",
+  #                                           "ICU Beds/Capita" = "ICUBeds_per_capita"),
+  #                               selected = "Hospital_Beds")
+  #          ),
+  #          fluidRow(
+  #            plotOutput("plot1")
+  #          )
+  #   ),
+  #   column(width = 6,
+  #          fluidRow(
+  #            selectInput(inputId = "state2",
+  #                        label = "Select a State:",
+  #                        choices = unique(mexico$`State Name`),
+  #                        selected = "Veracruz")
+  #          ),
+  #          fluidRow(
+  #            checkboxGroupInput(inputId = "vars2",
+  #                               label = "Select Measure(s)",
+  #                               choices = c("Hospital Beds" = "Hospital_Beds",
+  #                                           "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
+  #                                           "ICU Beds" = "ICU_Beds",
+  #                                           "ICU Beds/Capita" = "ICUBeds_per_capita"),
+  #                               selected = "Hospital_Beds")
+  #          ),
+  #          fluidRow(
+  #            plotOutput("plot2")
+  #          ),
+  #          fluidRow(
+  #            plotlyOutput("refplot")
+  #          )
+  #   )
+  # ),
   
   # ++++++++++++++++++++++
   # TAB 5 : MAP       ----
