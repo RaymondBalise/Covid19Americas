@@ -8,7 +8,7 @@ ui <- navbarPage(
   # ++++++++++++++++++++++
   # TAB 1 : HOME PAGE ----
   # ++++++++++++++++++++++
-
+  
   tabPanel(
     h4("Inicio"),
     fluidRow(
@@ -72,8 +72,8 @@ ui <- navbarPage(
     br(),    
     br(),
     fluidRow(
-      column(width = 6, offset = 3, plotlyOutput("summaryBedPlot",height = "200%"))
-   )
+      column(width = 6, offset = 3, plotlyOutput("summaryDeathsPerCapitaPlot",height = "200%"))
+    )
     
   ),
   # ++++++++++++++++++++++++++++++
@@ -84,7 +84,7 @@ ui <- navbarPage(
     fluidRow(
       h1(strong("Summary of a Single State"), align = "center", style = "color: black")
     ),
-  
+    
     fluidRow(
       h4(strong("Gray lines show the smallest or largest values acorss all states."), align = "center", style = "color: gray")
     ),
@@ -92,9 +92,9 @@ ui <- navbarPage(
     fluidRow(
       column(width = 6, offset = 3, 
              selectInput(inputId = "refPlace",
-                  label = "Select a State:",
-                  choices = mexico$`State Name`,
-                  selected = 1))
+                         label = "Select a State:",
+                         choices = mexico$`State Name`,
+                         selected = 1))
     ),
     fluidRow(
       column(width = 6, offset = 3, plotOutput("indexPlot")),
@@ -116,12 +116,12 @@ ui <- navbarPage(
            ),
            fluidRow(
              checkboxGroupInput(inputId = "vars1",
-                         label = "Select Measure(s)",
-                         choices = c("Hospital Beds" = "Hospital_Beds",
-                                     "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
-                                     "ICU Beds" = "ICU_Beds",
-                                     "ICU Beds/Capita" = "ICUBeds_per_capita"),
-                         selected = "Hospital_Beds")
+                                label = "Select Measure(s)",
+                                choices = c("Hospital Beds" = "Hospital_Beds",
+                                            "Hospital Beds/Capita" = "Hospital_Beds_per_capita",
+                                            "ICU Beds" = "ICU_Beds",
+                                            "ICU Beds/Capita" = "ICUBeds_per_capita"),
+                                selected = "Hospital_Beds")
            ),
            fluidRow(
              plotOutput("plot1")
@@ -163,7 +163,7 @@ ui <- navbarPage(
 )
 
 server <- function(input, output, session) {
-
+  
   
   # Summary plots / Index ----
   
@@ -177,8 +177,8 @@ server <- function(input, output, session) {
                      group = `State Name`,
                      color = `State Name`,
                      shape = 4,
-                     ),
-                 size = 2) +
+      ),
+      size = 2) +
       scale_shape_identity() +
       geom_smooth(aes(x=`Days Since the First Case (in Mexico)`, 
                       y = `Policy Index Adj Time Mobility`),
@@ -189,15 +189,15 @@ server <- function(input, output, session) {
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
   
-  # Summary plots / Death Beds ----
+  # Summary plots / DeathPerCapita ----
   
-  output$summaryBedPlot <- renderPlotly({
+  output$summaryDeathsPerCapitaPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Deaths/ICU Beds Through Time") +
+      ggtitle("Deaths per capita") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank()) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Deaths/ICU Bed`, 
+                     y = `Deaths per capita`, 
                      group = `State Name`,
                      color = `State Name`,
                      shape = 21),
@@ -258,16 +258,46 @@ server <- function(input, output, session) {
                 color = "gray", 
                 size = 2)  +
       geom_point(data = place, 
-               aes(x=`Days Since the First Case (in Mexico)`, 
-                   y = `Cases per capita`), 
-               color = "orange",
-               size = 2) +
+                 aes(x=`Days Since the First Case (in Mexico)`, 
+                     y = `Cases per capita`), 
+                 color = "orange",
+                 size = 2) +
       ylab("Cases per capita")
-      }) 
+  }) 
+  
+  
+  # Single State Plot / Death Per Capita Plot ----
+  
+  output$deathPerCapitaPlot <- renderPlot({
+    place <- mexico %>% 
+      filter(`State Name` == input$refPlace) %>% 
+      filter(!is.na(`Policy Index Adj Time Mobility`))
+    
+    ggplot() + 
+      ggtitle("Cases through time") +
+      theme_few(base_size = 25) +
+      theme(legend.title = element_blank()) +
+      geom_line(data = refDeaths, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Smallest), 
+                color = "gray", 
+                size = 2) + 
+      geom_line(data = refDeaths, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Largest), 
+                color = "gray", 
+                size = 2)  +
+      geom_point(data = place, 
+                 aes(x=`Days Since the First Case (in Mexico)`, 
+                     y = `Deaths per capita`), 
+                 color = "orange",
+                 size = 2) +
+      ylab("Deaths per capita")
+  }) 
   
   ##### multi-state plots#####
   
-
+  
   plot1_dat <- reactive({
     req(input$state1)
     mexico %>% 
@@ -279,7 +309,7 @@ server <- function(input, output, session) {
     mexico %>% 
       filter(`State Name` == input$state2) 
   })
-
+  
   
   output$plot1 <- renderPlot({
     #browser()
@@ -313,7 +343,7 @@ server <- function(input, output, session) {
   }) 
   
   output$plot2 <- renderPlot({
-
+    
     #browser()
     p <- ggplot(data = plot2_dat()) + 
       ggtitle("Beds Through Time") +
@@ -344,7 +374,7 @@ server <- function(input, output, session) {
     p
   }) 
   
-
+  
   # output$refplot <- renderPlotly({
   #   state1_label <- input$state1
   #   state2_label <- input$state2
@@ -368,9 +398,9 @@ server <- function(input, output, session) {
   #   
   #   ggplotly(x)
   # }) 
-
+  
   # Map ----
-
+  
   
   output$map <- renderLeaflet({
     

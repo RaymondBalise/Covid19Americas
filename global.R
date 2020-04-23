@@ -27,3 +27,9 @@ refCases <- mexico %>%
   group_by(`Days Since the First Case (in Mexico)`) %>% 
   summarise(Smallest = min(`Cases per capita`, na.rm=TRUE), 
             Largest = max(`Cases per capita`, na.rm=TRUE))
+
+refDeaths <- mexico %>% 
+  filter(!is.na(`Deaths per capita`)) %>% 
+  group_by(`Days Since the First Case (in Mexico)`) %>% 
+  summarise(Smallest = min(`Deaths per capita`, na.rm=TRUE), 
+            Largest = max(`Deaths per capita`, na.rm=TRUE))
