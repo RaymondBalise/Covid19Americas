@@ -1,5 +1,5 @@
 ---
-title: "Load Excel"
+title: "Load STATA"
 author: "Raymond R. Balise"
 date: "`r Sys.Date()`"
 output: 
@@ -41,6 +41,7 @@ analysis <- read_stata("../data/Mexico COVID-19 April 15.dta") %>%
   rename(`Deaths/ICU Bed` = Deaths_per_ICUbed) %>% 
   rename(`Policy Index Adj Time Mobility` = Policy_Index_Adj_Time_Mobility) %>% 
   rename(`Cases per capita` = Cases_per_capita) %>% 
+  rename(`Deaths per capita` = Deaths_per_capita) %>%
   mutate(State_Name = stri_encode(State_Name, "", "UTF-8")) %>% # accents
   mutate(`State Name` = case_when(State_Name == "Michoac�n" ~ "Michoacán",
                                 State_Name == "Nuevo Le�n" ~ "Nuevo León",
