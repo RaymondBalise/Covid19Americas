@@ -22,13 +22,13 @@ refIndexTimeMob <- mexico %>%
   summarise(Smallest = min(`Policy Index Adj Time Mobility`, na.rm=TRUE), 
             Largest = max(`Policy Index Adj Time Mobility`, na.rm=TRUE))
 
-refCases <- mexico %>% 
+refCasesPerCapita <- mexico %>% 
   filter(!is.na(`Cases per capita`)) %>% 
   group_by(`Days Since the First Case (in Mexico)`) %>% 
   summarise(Smallest = min(`Cases per capita`, na.rm=TRUE), 
             Largest = max(`Cases per capita`, na.rm=TRUE))
 
-refDeaths <- mexico %>% 
+refDeathPerCapita <- mexico %>% 
   filter(!is.na(`Deaths per capita`)) %>% 
   group_by(`Days Since the First Case (in Mexico)`) %>% 
   summarise(Smallest = min(`Deaths per capita`, na.rm=TRUE), 

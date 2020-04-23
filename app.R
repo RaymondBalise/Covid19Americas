@@ -235,8 +235,37 @@ server <- function(input, output, session) {
                 size = 2) +
       ylab("Policy Index Adj Time Mobility") 
   }) 
+
+  # Single State Plot / Death Per Capita Plot ----
   
-  # Single State Plot / Case Plot ----
+  output$deathPerCapitaPlot <- renderPlot({
+    place <- mexico %>% 
+      filter(`State Name` == input$refPlace) %>% 
+      filter(!is.na(`Policy Index Adj Time Mobility`))
+    
+    ggplot() + 
+      ggtitle("Deaths per Capita Through Time") +
+      theme_few(base_size = 25) +
+      theme(legend.title = element_blank()) +
+      geom_line(data = refDeathPerCapita, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Smallest), 
+                color = "gray", 
+                size = 2) + 
+      geom_line(data = refDeathPerCapita, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Largest), 
+                color = "gray", 
+                size = 2)  +
+      geom_point(data = place, 
+                 aes(x=`Days Since the First Case (in Mexico)`, 
+                     y = `Deaths per capita`), 
+                 color = "orange",
+                 size = 2) +
+      ylab("Deaths per capita")
+  }) 
+  
+  # Single State Plot / Case Per Capita Plot ----
   
   output$casePlot <- renderPlot({
     place <- mexico %>% 
@@ -247,12 +276,12 @@ server <- function(input, output, session) {
       ggtitle("Cases through time") +
       theme_few(base_size = 25) +
       theme(legend.title = element_blank()) +
-      geom_line(data = refCases, 
+      geom_line(data = refCasesPerCapita, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
                 color = "gray", 
                 size = 2) + 
-      geom_line(data = refCases, 
+      geom_line(data = refCasesPerCapita, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Largest), 
                 color = "gray", 
@@ -266,36 +295,7 @@ server <- function(input, output, session) {
   }) 
   
   
-  # Single State Plot / Death Per Capita Plot ----
-  
-  output$deathPerCapitaPlot <- renderPlot({
-    place <- mexico %>% 
-      filter(`State Name` == input$refPlace) %>% 
-      filter(!is.na(`Policy Index Adj Time Mobility`))
-    
-    ggplot() + 
-      ggtitle("Deaths per Capita Through Time") +
-      theme_few(base_size = 25) +
-      theme(legend.title = element_blank()) +
-      geom_line(data = refDeaths, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = Smallest), 
-                color = "gray", 
-                size = 2) + 
-      geom_line(data = refDeaths, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = Largest), 
-                color = "gray", 
-                size = 2)  +
-      geom_point(data = place, 
-                 aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Deaths per capita`), 
-                 color = "orange",
-                 size = 2) +
-      ylab("Deaths per capita")
-  }) 
-  
-  ##### multi-state plots#####
+    ##### multi-state plots #####
   
   
   plot1_dat <- reactive({
