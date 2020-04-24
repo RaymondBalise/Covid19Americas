@@ -19,16 +19,17 @@ ui <- navbarPage(
     br(),
     br(),
     fluidRow(
-      column(width = 6,
-             align = "left",
+      column(width = 12,
+             align = "center",
              br(),
              p("Un observatorio de políticas públicas y datos de salud por 
                estado para México por el Instituto de Estudios Avanzados de las 
                Américas de Miami y el Departamento de Ciencias de la Salud 
                Pública de la Facultad de Medicina Miller de la Universidad 
                de Miami", style = "font-size: 24px")
-      ),
-      column(width = 6,
+      )),
+      fluidRow(
+        column(width = 12,
              align = "center",
              img(src = "um.png"),
              h4("en colaboración con:"),
@@ -55,7 +56,7 @@ ui <- navbarPage(
   # TAB 2 : SUMMARY PAGE ----
   # +++++++++++++++++++++++++
   tabPanel(
-    h4("El Sumario"),
+    h4("Resumen"),
     fluidRow(
       h1(strong("Summary"), align = "center", style = "color: black")
     ),
@@ -80,7 +81,7 @@ ui <- navbarPage(
   # TAB 3 : SINGLE STATE PAGE ----
   # ++++++++++++++++++++++++++++++
   tabPanel(
-    h4("Estado único"),
+    h4("Por estado"),
     fluidRow(
       h1(strong("Summary of a Single State"), align = "center", style = "color: black")
     ),
@@ -157,7 +158,7 @@ ui <- navbarPage(
   # ++++++++++++++++++++++
   
   tabPanel(
-    h4("La Carta"),
+    h4("Mapa"),
     leafletOutput("map", height = 900)
   )
 )
@@ -404,14 +405,48 @@ server <- function(input, output, session) {
   
   output$map <- renderLeaflet({
     
-    leaflet(data = mexico_states) %>% 
+    mexico_latest <- mexico %>% 
+      group_by(`State Name`) %>%
+      slice(which.max(as.Date(Date, '%Y-%m-%d')))
+    
+    #join data to spdf
+    mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Total Cases")],
+                                     by.x = "ADMIN_NAME", by.y = "State Name")
+    
+    bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
+    pal <- colorBin("YlOrRd", domain = mexico_latest$`Total Cases`, bins = bins)
+    labels <- paste0("estado: ", mexico_states_covid$ADMIN_NAME, "</br> <br>casos: ",
+                     mexico_states_covid$`Total Cases`)
+    
+    labels <- sprintf(
+      "<strong>%s</strong><br/>%g casos",
+      mexico_states_covid$ADMIN_NAME, mexico_states_covid$`Total Cases`
+    ) %>% lapply(htmltools::HTML)
+    
+    leaflet(data = mexico_states_covid) %>% 
       addProviderTiles("Esri.WorldGrayCanvas") %>% 
       addPolygons(
-        weight = .5,
+        fillColor = ~pal(`Total Cases`),
+        weight = 2,
         opacity = 1,
-        fillOpacity = 0.5,
-        label = ~ADMIN_NAME
+        color = "white",
+        dashArray = "3",
+        fillOpacity = 0.7,
+        highlight = highlightOptions(
+          weight = 5,
+          color = "#666",
+          dashArray = "",
+          fillOpacity = 0.7,
+          bringToFront = TRUE),
+        label = labels,
+        labelOptions = labelOptions(
+          style = list("font-weight" = "normal", padding = "3px 8px"),
+          textsize = "15px",
+          direction = "auto")) %>%
+      addLegend(pal = pal, values = ~`Total Cases`, opacity = 0.7, title = NULL,
+                position = "bottomright"
       )
+    
   })
 }
 
