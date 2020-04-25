@@ -1,0 +1,94 @@
+---
+title: "Polar Plot "
+author: "Raymond R. Balise"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    df_print: kable
+    toc: false
+---
+
+```{r setup, include=FALSE, message=FALSE}
+library(conflicted)
+suppressMessages(conflict_prefer("filter", "dplyr"))
+suppressPackageStartupMessages(library(tidyverse))
+library(readr)
+
+```
+
+# Info
+
+
+## Notes:
+```{r}
+knitr::opts_chunk$set(fig.width=24, fig.height=16) 
+
+mexico <- read_rds("../data/analysis.rds")
+latest <- max(mexico[ "Days Since the First Case (in Mexico)"])
+polar <- mexico %>% 
+  filter(`Days Since the First Case (in Mexico)`== latest) %>% 
+  select(`State Name`, School_Closure,
+         Business_Closure,
+         Public_Events_Cancelled,
+         Public_Transit_Suspended,
+         Information_Campaign,
+         Internal_Travel_Control,
+         International_Travel_Controls) %>% 
+  pivot_longer(-`State Name`, names_to = "Restriction", values_to = "amount") %>% 
+  mutate(Restriction = case_when(Restriction == "Business_Closure" ~              "Business\nClosure",
+                                 Restriction == "Information_Campaign" ~          " Info\nCamp",
+                                 Restriction == "Internal_Travel_Control" ~       "Internal\nTravel",
+                                 Restriction == "International_Travel_Controls" ~ "  International\nTravel",
+                                 Restriction == "Public_Events_Cancelled" ~       "Public\nEvents", 
+                                 Restriction == "Public_Transit_Suspended" ~      "Public\nTransit",
+                                 Restriction == "School_Closure" ~                "School\nClosure"))
+
+library(viridis)
+library(ggthemes)
+
+#base 100 height 12000
+polar  %>%  
+#  filter(`State Name` == "Aguascalientes") %>% 
+ggplot(aes(x = Restriction, ymax=amount, ymin = 0, fill = Restriction)) +
+  geom_linerange(aes(ymax = .95), stat = "identity", color = "white") +
+	geom_linerange(aes(color = amount), stat = "identity",  size  = 2) +
+	theme_gray(base_size = 15) +
+	theme(panel.border = element_blank(),
+				legend.key = element_blank(),
+				axis.ticks = element_blank(),
+				axis.text.y = element_blank(),
+				panel.grid  = element_blank(),
+				axis.title = element_blank() ,
+				legend.position = "none"
+				) +
+  scale_color_viridis(end = .6, option = "B") +
+  scale_y_continuous(expand = c(0,0)) +
+  facet_wrap(vars(`State Name`)) +
+  ylim(0, 1.1) +
+	coord_polar(theta = "x") -> gg
+
+png(filename="../www/polarBarChart.png", width=1800, height=1800)
+gg
+dev.off()
+```
+
+
+Length of red line indicates restrictions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
