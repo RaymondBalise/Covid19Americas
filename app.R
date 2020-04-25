@@ -98,7 +98,7 @@ ui <- navbarPage(
                          selected = 1))
     ),
     fluidRow(
-      column(offset = 1, width = 5, plotlyOutput("indexPlot")),
+      column(offset = 1, width = 5, plotlyOutput("indexAdjTimeMobilityPlot")),
       column(width = 5, plotlyOutput("mobilityPlot"))
     )
     
@@ -220,7 +220,7 @@ server <- function(input, output, session) {
   
   # Single State Plot / Index ----
   
-  output$indexPlot <- renderPlotly({
+  output$indexAdjTimeMobilityPlot <- renderPlotly({
     # should be reactive
     place <- mexico %>% 
       filter(`State Name` == input$refPlace) %>% 
@@ -249,36 +249,36 @@ server <- function(input, output, session) {
   }) 
 
   # Single State Plot / Death Per Capita Plot ----
-  
-  output$deathPerCapitaPlot <- renderPlotly({
-    place <- mexico %>% 
-      filter(`State Name` == input$refPlace) %>% 
-      filter(!is.na(`Policy Index Adj Time Mobility`))
-    
-    gg <- ggplot() + 
-      ggtitle("Deaths per Capita") +
-      theme_few(base_size = 25) +
-      theme(legend.title = element_blank()) +
-      geom_line(data = refDeathPerCapita, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = Smallest), 
-                color = "gray", 
-                size = 1) + 
-      geom_line(data = refDeathPerCapita, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = Largest), 
-                color = "gray", 
-                size = 1)  +
-      geom_point(data = place, 
-                 aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Deaths per capita`), 
-                 color = "orange",
-                 size = 2,
-                 shape = 21) +
-      ylab("Deaths")
-    
-    ggplotly(gg, tooltip=c("x", "y", "group"))
-  }) 
+  # 
+  # output$deathPerCapitaPlot <- renderPlotly({
+  #   place <- mexico %>% 
+  #     filter(`State Name` == input$refPlace) %>% 
+  #     filter(!is.na(`Policy Index Adj Time Mobility`))
+  #   
+  #   gg <- ggplot() + 
+  #     ggtitle("Deaths per Capita") +
+  #     theme_few(base_size = 25) +
+  #     theme(legend.title = element_blank()) +
+  #     geom_line(data = refDeathPerCapita, 
+  #               aes(x=`Days Since the First Case (in Mexico)`, 
+  #                   y = Smallest), 
+  #               color = "gray", 
+  #               size = 1) + 
+  #     geom_line(data = refDeathPerCapita, 
+  #               aes(x=`Days Since the First Case (in Mexico)`, 
+  #                   y = Largest), 
+  #               color = "gray", 
+  #               size = 1)  +
+  #     geom_point(data = place, 
+  #                aes(x=`Days Since the First Case (in Mexico)`, 
+  #                    y = `Deaths per capita`), 
+  #                color = "orange",
+  #                size = 2,
+  #                shape = 21) +
+  #     ylab("Deaths")
+  #   
+  #   ggplotly(gg, tooltip=c("x", "y", "group"))
+  # }) 
   
   
  
@@ -308,7 +308,8 @@ server <- function(input, output, session) {
                      y =  `Mobility Index`), 
                  color = "orange",
                  size = 2) +
-      ylab("Mobility")
+      ylab("Mobility") +
+      expand_limits(x = 0, y = 0)
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   }) 
@@ -316,37 +317,37 @@ server <- function(input, output, session) {
   
   
   
-  # Single State Plot / Case Per Capita Plot ----
-  
-  output$casePlot <- renderPlotly({
-    place <- mexico %>% 
-      filter(`State Name` == input$refPlace) %>% 
-      filter(!is.na(`Policy Index Adj Time Mobility`))
-    
-    gg <- ggplot() + 
-      ggtitle("Cases") +
-      theme_few(base_size = 25) +
-      theme(legend.title = element_blank()) +
-      geom_line(data = refCasesPerCapita, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = Smallest), 
-                color = "gray", 
-                size = 1) + 
-      geom_line(data = refCasesPerCapita, 
-                aes(x=`Days Since the First Case (in Mexico)`, 
-                    y = Largest), 
-                color = "gray", 
-                size = 1)  +
-      geom_point(data = place, 
-                 aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Cases per capita`), 
-                 color = "orange",
-                 size = 1) +
-      ylab("Cases per capita")
-    
-    ggplotly(gg, tooltip=c("x", "y", "group"))
-  }) 
-  
+  # # Single State Plot / Case Per Capita Plot ----
+  # 
+  # output$casePlot <- renderPlotly({
+  #   place <- mexico %>% 
+  #     filter(`State Name` == input$refPlace) %>% 
+  #     filter(!is.na(`Policy Index Adj Time Mobility`))
+  #   
+  #   gg <- ggplot() + 
+  #     ggtitle("Cases") +
+  #     theme_few(base_size = 25) +
+  #     theme(legend.title = element_blank()) +
+  #     geom_line(data = refCasesPerCapita, 
+  #               aes(x=`Days Since the First Case (in Mexico)`, 
+  #                   y = Smallest), 
+  #               color = "gray", 
+  #               size = 1) + 
+  #     geom_line(data = refCasesPerCapita, 
+  #               aes(x=`Days Since the First Case (in Mexico)`, 
+  #                   y = Largest), 
+  #               color = "gray", 
+  #               size = 1)  +
+  #     geom_point(data = place, 
+  #                aes(x=`Days Since the First Case (in Mexico)`, 
+  #                    y = `Cases per capita`), 
+  #                color = "orange",
+  #                size = 1) +
+  #     ylab("Cases per capita")
+  #   
+  #   ggplotly(gg, tooltip=c("x", "y", "group"))
+  # }) 
+  # 
   
     ##### multi-state plots #####
   
