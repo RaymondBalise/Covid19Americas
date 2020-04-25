@@ -98,8 +98,8 @@ ui <- navbarPage(
                          selected = 1))
     ),
     fluidRow(
-      column(width = 6, offset = 3, plotOutput("indexPlot")),
-      column(width = 6, offset = 3, plotOutput("deathPerCapitaPlot"))
+      column(offset = 1, width = 5, plotlyOutput("indexPlot")),
+      column(width = 5, plotlyOutput("mobilityPlot"))
     )
     
   ),
@@ -170,7 +170,13 @@ server <- function(input, output, session) {
   
   output$summaryIndexPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Policy Index Adjusted for Time and Mobility Through Time") +
+      ggtitle("Policy Index Adjusted for Time and Mobility") +
+      geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
+                                            y = Smallest), color = "gray") +
+      geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
+                                            y = Average), color = "black") +
+      geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
+                                            y = Largest), color = "gray") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank()) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
@@ -181,20 +187,23 @@ server <- function(input, output, session) {
       ),
       size = 2) +
       scale_shape_identity() +
-      geom_smooth(aes(x=`Days Since the First Case (in Mexico)`, 
-                      y = `Policy Index Adj Time Mobility`),
-                  method = "gam",
-                  formula = y ~ s(x, bs = "cs"),  # shrinkage version of cubic spline base
-                  se=FALSE)
-    
-    ggplotly(gg, tooltip=c("x", "y", "group"))
-  })
+      ylab("Policy Index Adj Time Mobility")
+  
+      
+    ggplotly(gg, tooltip=c("x", "y", "group")) 
+    })
   
   # Summary plots / DeathPerCapita ----
   
   output$summaryDeathsPerCapitaPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
       ggtitle("Deaths per capita") +
+      geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
+                                            y = Smallest), color = "gray") +
+      geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
+                                            y = Average), color = "black") +
+      geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
+                                            y = Largest), color = "gray") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank()) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
@@ -203,101 +212,143 @@ server <- function(input, output, session) {
                      color = `State Name`,
                      shape = 21),
                  size = 2) +
-      scale_shape_identity() 
+      scale_shape_identity() +
+      ylab("Deaths per capita")
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
   
   # Single State Plot / Index ----
   
-  output$indexPlot <- renderPlot({
+  output$indexPlot <- renderPlotly({
     # should be reactive
     place <- mexico %>% 
       filter(`State Name` == input$refPlace) %>% 
       filter(!is.na(`Policy Index Adj Time Mobility`))
     
     ggplot() + 
-      ggtitle("Policy Index Adjusted for Time and Mobility Through Time") +
+      ggtitle("Policy Index Adjusted for Time and Mobility") +
       theme_few(base_size = 25) +
       geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
                 color = "gray", 
-                size = 2) + 
+                size = 1) + 
       geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Largest), 
                 color = "gray", 
-                size = 2)  +
-      geom_line(data = place, 
+                size = 1)  +
+      geom_point(data = place, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = `Policy Index Adj Time Mobility`), 
                 color = "orange",
-                size = 2) +
-      ylab("Policy Index Adj Time Mobility") 
+                size = 2,
+                shape = 4) +
+      ylab("Index") 
   }) 
 
   # Single State Plot / Death Per Capita Plot ----
   
-  output$deathPerCapitaPlot <- renderPlot({
+  output$deathPerCapitaPlot <- renderPlotly({
     place <- mexico %>% 
       filter(`State Name` == input$refPlace) %>% 
       filter(!is.na(`Policy Index Adj Time Mobility`))
     
-    ggplot() + 
-      ggtitle("Deaths per Capita Through Time") +
+    gg <- ggplot() + 
+      ggtitle("Deaths per Capita") +
       theme_few(base_size = 25) +
       theme(legend.title = element_blank()) +
       geom_line(data = refDeathPerCapita, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
                 color = "gray", 
-                size = 2) + 
+                size = 1) + 
       geom_line(data = refDeathPerCapita, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Largest), 
                 color = "gray", 
-                size = 2)  +
+                size = 1)  +
       geom_point(data = place, 
                  aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Deaths per capita`), 
                  color = "orange",
-                 size = 2) +
-      ylab("Deaths per capita")
+                 size = 2,
+                 shape = 21) +
+      ylab("Deaths")
+    
+    ggplotly(gg, tooltip=c("x", "y", "group"))
   }) 
+  
+  
+ 
+  # Single State Plot / Mobility Plot ----
+  
+  output$mobilityPlot <- renderPlotly({
+    place <- mexico %>% 
+      filter(`State Name` == input$refPlace) %>% 
+      filter(!is.na(`Mobility Index`))
+    
+    gg <- ggplot() + 
+      ggtitle("Mobility") +
+      theme_few(base_size = 25) +
+      theme(legend.title = element_blank()) +
+      geom_line(data = refMobilityIndex, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Smallest), 
+                color = "gray", 
+                size = 1) + 
+      geom_line(data = refMobilityIndex, 
+                aes(x=`Days Since the First Case (in Mexico)`, 
+                    y = Largest), 
+                color = "gray", 
+                size = 1)  +
+      geom_point(data = place, 
+                 aes(x=`Days Since the First Case (in Mexico)`, 
+                     y =  `Mobility Index`), 
+                 color = "orange",
+                 size = 2) +
+      ylab("Mobility")
+    
+    ggplotly(gg, tooltip=c("x", "y", "group"))
+  }) 
+  
+  
+  
   
   # Single State Plot / Case Per Capita Plot ----
   
-  output$casePlot <- renderPlot({
+  output$casePlot <- renderPlotly({
     place <- mexico %>% 
       filter(`State Name` == input$refPlace) %>% 
       filter(!is.na(`Policy Index Adj Time Mobility`))
     
-    ggplot() + 
-      ggtitle("Cases through time") +
+    gg <- ggplot() + 
+      ggtitle("Cases") +
       theme_few(base_size = 25) +
       theme(legend.title = element_blank()) +
       geom_line(data = refCasesPerCapita, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
                 color = "gray", 
-                size = 2) + 
+                size = 1) + 
       geom_line(data = refCasesPerCapita, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Largest), 
                 color = "gray", 
-                size = 2)  +
+                size = 1)  +
       geom_point(data = place, 
                  aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Cases per capita`), 
                  color = "orange",
-                 size = 2) +
+                 size = 1) +
       ylab("Cases per capita")
+    
+    ggplotly(gg, tooltip=c("x", "y", "group"))
   }) 
   
   
     ##### multi-state plots #####
-  
   
   plot1_dat <- reactive({
     req(input$state1)
