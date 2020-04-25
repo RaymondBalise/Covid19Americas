@@ -35,7 +35,6 @@ refIndexTimeMob <- makeLimits(mexico,
                               `Policy Index Adj Time Mobility`, 
                               `Days Since the First Case (in Mexico)`)
 
-
 refCasesPerCapita <- makeLimits(mexico, 
                               `Cases per capita`,
                               `Days Since the First Case (in Mexico)`)
@@ -51,3 +50,14 @@ refMobilityIndex <- makeLimits(mexico,
                                 `Days Since the First Case (in Mexico)`)
 
 
+latest <- max(mexico[ "Days Since the First Case (in Mexico)"])
+polar <- mexico %>% 
+  filter(`Days Since the First Case (in Mexico)`== latest) %>% 
+  select(`State Name`, School_Closure,
+         Business_Closure,
+         Public_Events_Cancelled,
+         Public_Transit_Suspended,
+         Information_Campaign,
+         Internal_Travel_Control,
+         International_Travel_Controls) %>% 
+  pivot_longer(-`State Name`, names_to = "Restriction", values_to = "amount")
