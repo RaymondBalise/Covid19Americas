@@ -74,7 +74,18 @@ ui <- navbarPage(
     br(),
     fluidRow(
       column(width = 6, offset = 3, plotlyOutput("summaryDeathsPerCapitaPlot",height = "200%"))
+    ),
+    br(),
+    br(),
+    h4(strong("Purple lines mean some restrictions. Redlines mean full restrictions."), align = "center", style = "color: black"),
+    fluidRow(
+      column(
+        width =12,
+        img(src = "polarBarChart.png"), 
+        align = "center")
     )
+    
+    
     
   ),
   # ++++++++++++++++++++++++++++++
