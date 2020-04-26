@@ -77,7 +77,7 @@ ui <- navbarPage(
     ),
     br(),
     br(),
-    h4(strong("A purple lines represents partial restrictions. A red line represents full restrictions."), align = "center", style = "color: black"),
+    h4(strong("Short purple lines represent partial responses. Long red line represents full responses."), align = "center", style = "color: black"),
     fluidRow(
       column(
         width =12,
