@@ -34,9 +34,11 @@ ui <- navbarPage(
              img(src = "um.png"),
              h4("en colaboración con:"),
              br(),
-             img(src = "LOGO-TAP.png"),
+             img(src = "mia.jpg", width = 400),
              br(),
-             img(src = "dphs.png")
+             img(src = "arts.jpeg", width= 450),
+             br(),
+             img(src = "miller.png", width = 450, height = 220)
       )
     ),
     fluidRow(),
@@ -67,8 +69,23 @@ ui <- navbarPage(
       h4(strong("Click a state name in the legend to hide or show it."), align = "center", style = "color: gray")
     ),
     br(),
+    br(),
     fluidRow(
-      column(width = 6, offset = 3, plotlyOutput("summaryIndexPlot",height = "200%"))),    
+      tabBox(id = "index",
+             title = h3("Policy Index Adjusted for Time and Mobility"),
+             height = "500px",
+             tabPanel("Plot",
+                      plotlyOutput("summaryIndexPlot")),
+             tabPanel("Table",
+                      dataTableOutput("index_table"))),
+      tabBox(id = "deaths",
+             title = h3("Deaths per Capita"),
+             height = "500px",
+             tabPanel("Plot",
+                      plotlyOutput("summaryDeathsPerCapitaPlot")),
+             tabPanel("Table",
+                      dataTableOutput("death_table")))
+      ),    
     br(),    
     br(),    
     br(),
@@ -78,6 +95,7 @@ ui <- navbarPage(
     br(),
     br(),
     h4(strong("Short purple lines represent partial responses. Long red line represents full responses."), align = "center", style = "color: black"),
+
     fluidRow(
       column(
         width =12,
@@ -170,7 +188,15 @@ ui <- navbarPage(
   
   tabPanel(
     h4("Mapa"),
+    h2("Mapa del índice de políticas ajustado por tiempo y movilidad"),
+    br(),
     leafletOutput("map", height = 900)
+  ),
+  tabPanel(
+    h4("Metodología")
+  ),
+  tabPanel(
+    h4("Contacto")
   )
 )
 
@@ -181,7 +207,7 @@ server <- function(input, output, session) {
   
   output$summaryIndexPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Policy Index Adjusted for Time and Mobility") +
+      #ggtitle("Policy Index Adjusted for Time and Mobility") +
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Smallest), color = "gray") +
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
@@ -189,7 +215,11 @@ server <- function(input, output, session) {
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Largest), color = "gray") +
       theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
+      theme(legend.title = element_blank(),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Policy Index Adj Time Mobility`, 
                      group = `State Name`,
@@ -198,17 +228,34 @@ server <- function(input, output, session) {
       ),
       size = 2) +
       scale_shape_identity() +
-      ylab("Policy Index Adj Time Mobility")
-  
-      
+      ylab("Policy Index")
+    
+    
     ggplotly(gg, tooltip=c("x", "y", "group")) 
-    })
+  })
+  
+  mexico_latest <- mexico %>% 
+    group_by(`State Name`) %>%
+    slice(which.max(as.Date(Date, '%Y-%m-%d')))
+  
+  output$index_table <- renderDataTable({
+    
+    mexico_latest %>% 
+      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,2)) %>% 
+      select(`State Name`, `Policy Index Adj Time Mobility`)  %>% 
+      datatable()
+  },
+  options = list(
+    dom = 't'
+  ),
+  rownames = FALSE
+  )
   
   # Summary plots / DeathPerCapita ----
   
   output$summaryDeathsPerCapitaPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Deaths per capita") +
+      #ggtitle("Deaths per capita") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Smallest), color = "gray") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
@@ -216,7 +263,11 @@ server <- function(input, output, session) {
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Largest), color = "gray") +
       theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
+      theme(legend.title = element_blank(),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Deaths per capita`, 
                      group = `State Name`,
@@ -224,10 +275,23 @@ server <- function(input, output, session) {
                      shape = 21),
                  size = 2) +
       scale_shape_identity() +
-      ylab("Deaths per capita")
+      ylab("Deaths/Capita")
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
+  
+  output$death_table <- renderDataTable({
+    
+    mexico_latest %>% 
+      mutate(`Deaths per capita` = round(`Deaths per capita`,2)) %>% 
+      select(`State Name`, `Deaths per capita`)  %>% 
+      datatable()
+  },
+  options = list(
+    dom = 't'
+  ),
+  rownames = FALSE
+  )
   
   # Single State Plot / Index ----
   
@@ -473,23 +537,21 @@ server <- function(input, output, session) {
       slice(which.max(as.Date(Date, '%Y-%m-%d')))
     
     #join data to spdf
-    mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Total Cases")],
+    mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Policy Index Adj Time Mobility")],
                                      by.x = "ADMIN_NAME", by.y = "State Name")
     
-    bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
-    pal <- colorBin("YlOrRd", domain = mexico_latest$`Total Cases`, bins = bins)
-    labels <- paste0("estado: ", mexico_states_covid$ADMIN_NAME, "</br> <br>casos: ",
-                     mexico_states_covid$`Total Cases`)
+    #bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
+    pal <- colorBin("YlOrRd", domain = mexico_latest$`Policy Index Adj Time Mobility`)
     
     labels <- sprintf(
-      "<strong>%s</strong><br/>%g casos",
-      mexico_states_covid$ADMIN_NAME, mexico_states_covid$`Total Cases`
+      "<strong>%s</strong><br/>%g índice de política",
+      mexico_states_covid$ADMIN_NAME, mexico_states_covid$`Policy Index Adj Time Mobility`
     ) %>% lapply(htmltools::HTML)
     
     leaflet(data = mexico_states_covid) %>% 
       addProviderTiles("Esri.WorldGrayCanvas") %>% 
       addPolygons(
-        fillColor = ~pal(`Total Cases`),
+        fillColor = ~pal(`Policy Index Adj Time Mobility`),
         weight = 2,
         opacity = 1,
         color = "white",
@@ -506,7 +568,7 @@ server <- function(input, output, session) {
           style = list("font-weight" = "normal", padding = "3px 8px"),
           textsize = "15px",
           direction = "auto")) %>%
-      addLegend(pal = pal, values = ~`Total Cases`, opacity = 0.7, title = NULL,
+      addLegend(pal = pal, values = ~`Policy Index Adj Time Mobility`, opacity = 0.7, title = NULL,
                 position = "bottomright"
       )
     
