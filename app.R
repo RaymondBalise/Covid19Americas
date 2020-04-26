@@ -114,7 +114,9 @@ ui <- navbarPage(
     ),
     br(),
     fluidRow(
-      column(width = 6, offset = 3, 
+      column(width = 3,
+             offset = 1,
+             align = "left",
              selectInput(inputId = "refPlace",
                          label = "Select a State:",
                          choices = mexico$`State Name`,
@@ -296,8 +298,12 @@ server <- function(input, output, session) {
       filter(!is.na(`Policy Index Adj Time Mobility`))
     
     ggplot() + 
-      ggtitle("Policy Index Adjusted for Time and Mobility") +
+      ggtitle("Policy Index Adj for Time & Mobility") +
       theme_few(base_size = 25) +
+      theme( panel.background = element_rect(fill = "transparent"), # bg of the panel
+        plot.background = element_rect(fill = "transparent", color = NA), 
+        legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+        legend.box.background = element_rect(fill = "transparent")) +
       geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
@@ -361,7 +367,11 @@ server <- function(input, output, session) {
     gg <- ggplot() + 
       ggtitle("Mobility") +
       theme_few(base_size = 25) +
-      theme(legend.title = element_blank()) +
+      theme(legend.title = element_blank(), 
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_line(data = refMobilityIndex, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
