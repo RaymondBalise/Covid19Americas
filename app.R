@@ -34,9 +34,11 @@ ui <- navbarPage(
              img(src = "um.png"),
              h4("en colaboración con:"),
              br(),
-             img(src = "LOGO-TAP.png"),
+             img(src = "mia.jpg", width = 400),
              br(),
-             img(src = "dphs.png")
+             img(src = "arts.jpeg", width= 450),
+             br(),
+             img(src = "miller.png", width = 450, height = 220)
       )
     ),
     fluidRow(),
@@ -171,6 +173,12 @@ ui <- navbarPage(
   tabPanel(
     h4("Mapa"),
     leafletOutput("map", height = 900)
+  ),
+  tabPanel(
+    h4("Metodología")
+  ),
+  tabPanel(
+    h4("Contacto")
   )
 )
 
