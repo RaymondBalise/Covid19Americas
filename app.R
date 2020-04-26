@@ -69,15 +69,25 @@ ui <- navbarPage(
       h4(strong("Click a state name in the legend to hide or show it."), align = "center", style = "color: gray")
     ),
     br(),
-    fluidRow(
-      column(width = 6, offset = 3, plotlyOutput("summaryIndexPlot",height = "200%"))),    
-    br(),    
-    br(),    
     br(),
     fluidRow(
-      column(width = 6, offset = 3, plotlyOutput("summaryDeathsPerCapitaPlot",height = "200%"))
-    ),
-    br(),
+      tabBox(id = "index",
+             title = h3("Policy Index Adjusted for Time and Mobility"),
+             height = "500px",
+             tabPanel("Plot",
+                      plotlyOutput("summaryIndexPlot")),
+             tabPanel("Table",
+                      dataTableOutput("index_table"))),
+      tabBox(id = "deaths",
+             title = h3("Deaths per Capita"),
+             height = "500px",
+             tabPanel("Plot",
+                      plotlyOutput("summaryDeathsPerCapitaPlot")),
+             tabPanel("Table",
+                      dataTableOutput("death_table")))
+      ),    
+    br(),    
+    br(),    
     br(),
     h4(strong("A purple lines represents partial restrictions. A red line represents full restrictions."), align = "center", style = "color: black"),
     fluidRow(
@@ -172,6 +182,8 @@ ui <- navbarPage(
   
   tabPanel(
     h4("Mapa"),
+    h2("Mapa del índice de políticas ajustado por tiempo y movilidad"),
+    br(),
     leafletOutput("map", height = 900)
   ),
   tabPanel(
@@ -189,7 +201,7 @@ server <- function(input, output, session) {
   
   output$summaryIndexPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Policy Index Adjusted for Time and Mobility") +
+      #ggtitle("Policy Index Adjusted for Time and Mobility") +
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Smallest), color = "gray") +
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
@@ -197,7 +209,11 @@ server <- function(input, output, session) {
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Largest), color = "gray") +
       theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
+      theme(legend.title = element_blank(),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Policy Index Adj Time Mobility`, 
                      group = `State Name`,
@@ -206,17 +222,34 @@ server <- function(input, output, session) {
       ),
       size = 2) +
       scale_shape_identity() +
-      ylab("Policy Index Adj Time Mobility")
-  
-      
+      ylab("Policy Index")
+    
+    
     ggplotly(gg, tooltip=c("x", "y", "group")) 
-    })
+  })
+  
+  mexico_latest <- mexico %>% 
+    group_by(`State Name`) %>%
+    slice(which.max(as.Date(Date, '%Y-%m-%d')))
+  
+  output$index_table <- renderDataTable({
+    
+    mexico_latest %>% 
+      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,2)) %>% 
+      select(`State Name`, `Policy Index Adj Time Mobility`)  %>% 
+      datatable()
+  },
+  options = list(
+    dom = 't'
+  ),
+  rownames = FALSE
+  )
   
   # Summary plots / DeathPerCapita ----
   
   output$summaryDeathsPerCapitaPlot <- renderPlotly({
     gg <- ggplot(data = mexico) + 
-      ggtitle("Deaths per capita") +
+      #ggtitle("Deaths per capita") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Smallest), color = "gray") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
@@ -224,7 +257,11 @@ server <- function(input, output, session) {
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Largest), color = "gray") +
       theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
+      theme(legend.title = element_blank(),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
                      y = `Deaths per capita`, 
                      group = `State Name`,
@@ -232,10 +269,23 @@ server <- function(input, output, session) {
                      shape = 21),
                  size = 2) +
       scale_shape_identity() +
-      ylab("Deaths per capita")
+      ylab("Deaths/Capita")
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
+  
+  output$death_table <- renderDataTable({
+    
+    mexico_latest %>% 
+      mutate(`Deaths per capita` = round(`Deaths per capita`,2)) %>% 
+      select(`State Name`, `Deaths per capita`)  %>% 
+      datatable()
+  },
+  options = list(
+    dom = 't'
+  ),
+  rownames = FALSE
+  )
   
   # Single State Plot / Index ----
   
