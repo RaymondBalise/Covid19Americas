@@ -481,23 +481,21 @@ server <- function(input, output, session) {
       slice(which.max(as.Date(Date, '%Y-%m-%d')))
     
     #join data to spdf
-    mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Total Cases")],
+    mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Policy Index Adj Time Mobility")],
                                      by.x = "ADMIN_NAME", by.y = "State Name")
     
-    bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
-    pal <- colorBin("YlOrRd", domain = mexico_latest$`Total Cases`, bins = bins)
-    labels <- paste0("estado: ", mexico_states_covid$ADMIN_NAME, "</br> <br>casos: ",
-                     mexico_states_covid$`Total Cases`)
+    #bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
+    pal <- colorBin("YlOrRd", domain = mexico_latest$`Policy Index Adj Time Mobility`)
     
     labels <- sprintf(
-      "<strong>%s</strong><br/>%g casos",
-      mexico_states_covid$ADMIN_NAME, mexico_states_covid$`Total Cases`
+      "<strong>%s</strong><br/>%g índice de política",
+      mexico_states_covid$ADMIN_NAME, mexico_states_covid$`Policy Index Adj Time Mobility`
     ) %>% lapply(htmltools::HTML)
     
     leaflet(data = mexico_states_covid) %>% 
       addProviderTiles("Esri.WorldGrayCanvas") %>% 
       addPolygons(
-        fillColor = ~pal(`Total Cases`),
+        fillColor = ~pal(`Policy Index Adj Time Mobility`),
         weight = 2,
         opacity = 1,
         color = "white",
@@ -514,7 +512,7 @@ server <- function(input, output, session) {
           style = list("font-weight" = "normal", padding = "3px 8px"),
           textsize = "15px",
           direction = "auto")) %>%
-      addLegend(pal = pal, values = ~`Total Cases`, opacity = 0.7, title = NULL,
+      addLegend(pal = pal, values = ~`Policy Index Adj Time Mobility`, opacity = 0.7, title = NULL,
                 position = "bottomright"
       )
     
