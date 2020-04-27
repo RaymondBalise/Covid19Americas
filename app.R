@@ -102,7 +102,7 @@ ui <- navbarPage(
         align = "center")
     ), 
     
-    p("Estos datos se actualizaron por última vez el 15 de abril de 2020.", align = "center")
+    p("Estos datos se actualizaron por última vez el 23 de abril de 2020.", align = "center")
     
     
     
@@ -124,7 +124,7 @@ ui <- navbarPage(
       column(width = 6, offset = 3, 
              selectInput(inputId = "refPlace",
                          label = "Seleccione un estado:",
-                         choices = mexico$`State Name`,
+                         choices = stateNames,
                          selected = 1))
     ),
     fluidRow(
@@ -241,17 +241,15 @@ server <- function(input, output, session) {
     slice(which.max(as.Date(Date, '%Y-%m-%d')))
   
   output$index_table <- renderDataTable({
-    
     mexico_latest %>% 
       mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,2)) %>% 
-      select(`State Name`, `Policy Index Adj Time Mobility`)  %>% 
-      datatable()
-  },
-  options = list(
-    dom = 't'
-  ),
-  rownames = FALSE
-  )
+      select(`State Name`, `Policy Index Adj Time Mobility`) %>% 
+      rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
+      rename(Estado = `State Name`) %>% 
+      datatable(., 
+                options = list(dom = 't'),
+                rownames = FALSE)
+  })  
   
   # Summary plots / DeathPerCapita ----
   
@@ -259,11 +257,11 @@ server <- function(input, output, session) {
     gg <- ggplot(data = mexico) + 
       #ggtitle("Deaths per capita") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
-                                            y = Smallest), color = "gray") +
+                                            y = Smallest * 1000000), color = "gray") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
-                                            y = Average), color = "black") +
+                                            y = Average * 1000000), color = "black") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
-                                            y = Largest), color = "gray") +
+                                            y = Largest * 1000000), color = "gray") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank(),
             panel.background = element_rect(fill = "transparent"), # bg of the panel
@@ -271,7 +269,7 @@ server <- function(input, output, session) {
             legend.background = element_rect(fill = "transparent"), # get rid of legend bg
             legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Deaths per capita`, 
+                     y = `Deaths per capita` * 1000000, 
                      group = `State Name`,
                      color = `State Name`,
                      shape = 21),
@@ -285,16 +283,21 @@ server <- function(input, output, session) {
   
   output$death_table <- renderDataTable({
     
-    mexico_latest %>% 
-      mutate(`Deaths per capita` = round(`Deaths per capita`,2)) %>% 
-      select(`State Name`, `Deaths per capita`)  %>% 
-      datatable()
-  },
-  options = list(
-    dom = 't'
-  ),
-  rownames = FALSE
-  )
+  mexico %>% 
+    select(Date, `State Name`, `Deaths per capita`) %>% 
+    group_by(`State Name`) %>%
+    slice(which.max(as.Date(Date, '%Y-%m-%d'))) %>% 
+    mutate(`Deaths per capita` = round(`Deaths per capita` * 1000000, .01)) %>% 
+      select(`State Name`, `Deaths per capita`) %>% 
+      rename(`Muertes per capita * 1,000,000` = `Deaths per capita`) %>%    
+      rename(Estado = `State Name`) %>% 
+      datatable(., 
+                options = list(dom = 't'),
+                rownames = FALSE)
+  })  
+  
+  
+  
   
   # Single State Plot / Index ----
   
