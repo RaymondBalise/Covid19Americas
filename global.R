@@ -18,7 +18,10 @@ mexico <- read_rds("./data/analysis.rds")
 
 mexico_states <- read_rds("./geo/mexico_states.rds")
 
-
+stateNames <- mexico %>% 
+  select(State_Name) %>% 
+  distinct() %>% 
+  arrange(State_Name)
 
 makeLimits <- function(data, x, grouping) {
   data %>% 

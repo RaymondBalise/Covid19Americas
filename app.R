@@ -60,42 +60,49 @@ ui <- navbarPage(
   tabPanel(
     h4("Resumen"),
     fluidRow(
-      h1(strong("Summary"), align = "center", style = "color: black")
+      h1(strong("Resumen"), align = "center", style = "color: black")
     ),
     fluidRow(
-      h4(strong("Double click a state name in the legend to show only it.  Double click it again to show all."), align = "center", style = "color: gray")
+      h4(strong("Haga doble clic en el nombre de un estado en la leyenda para mostrarlo solo. Haga doble clic nuevamente para mostrar toda la información."), align = "center", style = "color: red")
     ),
     fluidRow(
-      h4(strong("Click a state name in the legend to hide or show it."), align = "center", style = "color: gray")
+      h4(strong("Haga clic en el nombre de un estado en la leyenda para ocultar o mostrar un estado."), align = "center", style = "color: red")
     ),
     br(),
     br(),
     fluidRow(
+      column(offset = 3, width = 12,
       tabBox(id = "index",
-             title = h3("Policy Index Adjusted for Time and Mobility"),
+             title = h3("Índice de política pública ajustado por tiempo y movilidad", align = "center"),
              height = "500px",
-             tabPanel("Plot",
+             tabPanel("Grafico", width = 12,
                       plotlyOutput("summaryIndexPlot")),
-             tabPanel("Table",
-                      dataTableOutput("index_table"))),
+             tabPanel("Tabla de datos", width = 12,
+                      dataTableOutput("index_table")))
+      )),
+    fluidRow(
+      column(offset = 3, width = 12,
       tabBox(id = "deaths",
-             title = h3("Deaths per Capita"),
+             title = h3("Muertes per capita", align = "center"),
              height = "500px",
-             tabPanel("Plot",
+             tabPanel("Grafico",
                       plotlyOutput("summaryDeathsPerCapitaPlot")),
-             tabPanel("Table",
+             tabPanel("Tabla de datos",
                       dataTableOutput("death_table")))
-      ),    
+      )),    
     br(),    
     br(),    
     br(),
-    h4(strong("A purple lines represents partial restrictions. A red line represents full restrictions."), align = "center", style = "color: black"),
+    h4(strong("Las líneas moradas cortas representan respuestas parciales. La línea roja larga representa respuestas completas."), align = "center", style = "color: red"),
+    
     fluidRow(
       column(
         width =12,
         img(src = "polarBarChart.png"), 
         align = "center")
-    )
+    ), 
+    
+    p("Estos datos se actualizaron por última vez el 23 de abril de 2020.", align = "center")
     
     
     
@@ -106,11 +113,11 @@ ui <- navbarPage(
   tabPanel(
     h4("Por estado"),
     fluidRow(
-      h1(strong("Summary of a Single State"), align = "center", style = "color: black")
+      h1(strong("Resumen por estado "), align = "center", style = "color: black")
     ),
     
     fluidRow(
-      h4(strong("Gray lines show the smallest or largest values acorss all states."), align = "center", style = "color: gray")
+      h4(strong("Las líneas grises muestran los valores más pequeños o más grandes de todos los estados."), align = "center", style = "color: red")
     ),
     br(),
     fluidRow(
@@ -118,10 +125,12 @@ ui <- navbarPage(
              offset = 1,
              align = "left",
              selectInput(inputId = "refPlace",
-                         label = "Select a State:",
-                         choices = mexico$`State Name`,
+                         label = "Seleccione un estado:",
+                         choices = stateNames,
                          selected = 1))
     ),
+    br(),
+    br(),
     fluidRow(
       column(offset = 1, width = 5, plotlyOutput("indexAdjTimeMobilityPlot")),
       column(width = 5, plotlyOutput("mobilityPlot"))
@@ -224,7 +233,8 @@ server <- function(input, output, session) {
       ),
       size = 2) +
       scale_shape_identity() +
-      ylab("Policy Index")
+      xlab("Días transcurridos desde el primer caso (en México)") +
+      ylab("Índice de política")
     
     
     ggplotly(gg, tooltip=c("x", "y", "group")) 
@@ -235,17 +245,15 @@ server <- function(input, output, session) {
     slice(which.max(as.Date(Date, '%Y-%m-%d')))
   
   output$index_table <- renderDataTable({
-    
     mexico_latest %>% 
       mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,2)) %>% 
-      select(`State Name`, `Policy Index Adj Time Mobility`)  %>% 
-      datatable()
-  },
-  options = list(
-    dom = 't'
-  ),
-  rownames = FALSE
-  )
+      select(`State Name`, `Policy Index Adj Time Mobility`) %>% 
+      rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
+      rename(Estado = `State Name`) %>% 
+      datatable(., 
+                options = list(dom = 't'),
+                rownames = FALSE)
+  })  
   
   # Summary plots / DeathPerCapita ----
   
@@ -253,11 +261,11 @@ server <- function(input, output, session) {
     gg <- ggplot(data = mexico) + 
       #ggtitle("Deaths per capita") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
-                                            y = Smallest), color = "gray") +
+                                            y = Smallest * 1000000), color = "gray") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
-                                            y = Average), color = "black") +
+                                            y = Average * 1000000), color = "black") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
-                                            y = Largest), color = "gray") +
+                                            y = Largest * 1000000), color = "gray") +
       theme_few(base_size = 20) +
       theme(legend.title = element_blank(),
             panel.background = element_rect(fill = "transparent"), # bg of the panel
@@ -265,29 +273,35 @@ server <- function(input, output, session) {
             legend.background = element_rect(fill = "transparent"), # get rid of legend bg
             legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Deaths per capita`, 
+                     y = `Deaths per capita` * 1000000, 
                      group = `State Name`,
                      color = `State Name`,
                      shape = 21),
                  size = 2) +
       scale_shape_identity() +
-      ylab("Deaths/Capita")
+      ylab("Muertes per capita") +
+      xlab("Días transcurridos desde el primer caso (en México)")
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
   
   output$death_table <- renderDataTable({
     
-    mexico_latest %>% 
-      mutate(`Deaths per capita` = round(`Deaths per capita`,2)) %>% 
-      select(`State Name`, `Deaths per capita`)  %>% 
-      datatable()
-  },
-  options = list(
-    dom = 't'
-  ),
-  rownames = FALSE
-  )
+  mexico %>% 
+    select(Date, `State Name`, `Deaths per capita`) %>% 
+    group_by(`State Name`) %>%
+    slice(which.max(as.Date(Date, '%Y-%m-%d'))) %>% 
+    mutate(`Deaths per capita` = round(`Deaths per capita` * 1000000, .01)) %>% 
+      select(`State Name`, `Deaths per capita`) %>% 
+      rename(`Muertes per capita * 1,000,000` = `Deaths per capita`) %>%    
+      rename(Estado = `State Name`) %>% 
+      datatable(., 
+                options = list(dom = 't'),
+                rownames = FALSE)
+  })  
+  
+  
+  
   
   # Single State Plot / Index ----
   
@@ -298,12 +312,13 @@ server <- function(input, output, session) {
       filter(!is.na(`Policy Index Adj Time Mobility`))
     
     ggplot() + 
-      ggtitle("Policy Index Adj for Time & Mobility") +
-      theme_few(base_size = 25) +
-      theme( panel.background = element_rect(fill = "transparent"), # bg of the panel
-        plot.background = element_rect(fill = "transparent", color = NA), 
-        legend.background = element_rect(fill = "transparent"), # get rid of legend bg
-        legend.box.background = element_rect(fill = "transparent")) +
+      ggtitle("Índice de política pública ajustado por tiempo y movilidad") +
+      theme_few(base_size = 20) +
+      theme(plot.title = element_text(size = 20),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
@@ -320,7 +335,8 @@ server <- function(input, output, session) {
                 color = "orange",
                 size = 2,
                 shape = 4) +
-      ylab("Index") 
+      ylab("Índice")  +
+      xlab("Días transcurridos desde el primer caso (en México)")
   }) 
 
   # Single State Plot / Death Per Capita Plot ----
@@ -365,9 +381,9 @@ server <- function(input, output, session) {
       filter(!is.na(`Mobility Index`))
     
     gg <- ggplot() + 
-      ggtitle("Mobility") +
-      theme_few(base_size = 25) +
-      theme(legend.title = element_blank(), 
+      ggtitle("Movilidad") +
+      theme_few(base_size = 20) +
+      theme(legend.title = element_blank(),
             panel.background = element_rect(fill = "transparent"), # bg of the panel
             plot.background = element_rect(fill = "transparent", color = NA), 
             legend.background = element_rect(fill = "transparent"), # get rid of legend bg
@@ -387,7 +403,8 @@ server <- function(input, output, session) {
                      y =  `Mobility Index`), 
                  color = "orange",
                  size = 2) +
-      ylab("Mobility") +
+      ylab("Movilidad") +
+      xlab("Días transcurridos desde el primer caso (en México)")
       expand_limits(x = 0, y = 0)
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
@@ -430,81 +447,82 @@ server <- function(input, output, session) {
   
     ##### multi-state plots #####
   
-  plot1_dat <- reactive({
-    req(input$state1)
-    mexico %>% 
-      filter(`State Name` == input$state1)
-  })
-  
-  plot2_dat <- reactive({
-    req(input$state2)
-    mexico %>% 
-      filter(`State Name` == input$state2) 
-  })
-  
-  
-  output$plot1 <- renderPlot({
-    #browser()
-    p <- ggplot(data = plot1_dat()) + 
-      ggtitle("Beds Through Time") +
-      theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
-      geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                     y = input$vars1[1]),
-                 color = "red"
-      ) +
-      labs(y = "Measure")
-    
-    if(length(input$vars1) > 1){
-      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                              y = input$vars1[2]),
-                          color = "green"
-      )
-    }else if(length(input$vars1) > 2){
-      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                              y = input$vars1[3]),
-                          color = "orange"
-      )
-    }else if(length(input$vars1) > 3){
-      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                              y = input$vars1[4]),
-                          color = "blue"
-      )
-    }
-    p
-  }) 
-  
-  output$plot2 <- renderPlot({
-    
-    #browser()
-    p <- ggplot(data = plot2_dat()) + 
-      ggtitle("Beds Through Time") +
-      theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
-      geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                     y = input$vars2[1]),
-                 color = "red"
-      ) +
-      labs(y = "Measure")
-    
-    if(length(input$vars2) > 1){
-      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                              y = input$vars2[2]),
-                          color = "green"
-      )
-    }else if(length(input$vars2) > 2){
-      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                              y = input$vars2[3]),
-                          color = "orange"
-      )
-    }else if(length(input$vars2) > 3){
-      p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
-                              y = input$vars2[4]),
-                          color = "blue"
-      )
-    }
-    p
-  }) 
+  # plot1_dat <- reactive({
+  #   req(input$state1)
+  #   mexico %>% 
+  #     filter(`State Name` == input$state1)
+  # })
+  # 
+  # plot2_dat <- reactive({
+  #   req(input$state2)
+  #   mexico %>% 
+  #     filter(`State Name` == input$state2) 
+  # })
+  # 
+  # 
+  # output$plot1 <- renderPlot({
+  #   #browser()
+  #   p <- ggplot(data = plot1_dat()) + 
+  #     ggtitle("Beds Through Time") +
+  #     theme_few(base_size = 20) +
+  #     theme(legend.title = element_blank()) +
+  #     geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                    y = input$vars1[1]),
+  #                color = "red"
+  #     ) +
+  #     ylab("Measure") +
+  #     xlab("Movilidad")
+  #   
+  #   if(length(input$vars1) > 1){
+  #     p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                             y = input$vars1[2]),
+  #                         color = "green"
+  #     )
+  #   }else if(length(input$vars1) > 2){
+  #     p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                             y = input$vars1[3]),
+  #                         color = "orange"
+  #     )
+  #   }else if(length(input$vars1) > 3){
+  #     p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                             y = input$vars1[4]),
+  #                         color = "blue"
+  #     )
+  #   }
+  #   p
+  # }) 
+  # 
+  # output$plot2 <- renderPlot({
+  #   
+  #   #browser()
+  #   p <- ggplot(data = plot2_dat()) + 
+  #     ggtitle("Beds Through Time") +
+  #     theme_few(base_size = 20) +
+  #     theme(legend.title = element_blank()) +
+  #     geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                    y = input$vars2[1]),
+  #                color = "red"
+  #     ) +
+  #     labs(y = "Measure")
+  #   
+  #   if(length(input$vars2) > 1){
+  #     p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                             y = input$vars2[2]),
+  #                         color = "green"
+  #     )
+  #   }else if(length(input$vars2) > 2){
+  #     p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                             y = input$vars2[3]),
+  #                         color = "orange"
+  #     )
+  #   }else if(length(input$vars2) > 3){
+  #     p <- p + geom_point(aes(x =`Days Since the First Case (in Mexico)`, 
+  #                             y = input$vars2[4]),
+  #                         color = "blue"
+  #     )
+  #   }
+  #   p
+  # }) 
   
   
   # output$refplot <- renderPlotly({
