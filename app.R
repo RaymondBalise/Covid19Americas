@@ -66,7 +66,7 @@ ui <- navbarPage(
       h4(strong("Haga doble clic en el nombre de un estado en la leyenda para mostrarlo solo. Haga doble clic nuevamente para mostrar toda la información."), align = "center", style = "color: red")
     ),
     fluidRow(
-      h4(strong("Click a state name in the legend to hide or show it."), align = "center", style = "color: red")
+      h4(strong("Haga clic en el nombre de un estado en la leyenda para ocultar o mostrar un estado."), align = "center", style = "color: red")
     ),
     br(),
     br(),
@@ -75,9 +75,9 @@ ui <- navbarPage(
       tabBox(id = "index",
              title = h3("Índice de política pública ajustado por tiempo y movilidad", align = "center"),
              height = "500px",
-             tabPanel("Plot", width = 12,
+             tabPanel("Grafico", width = 12,
                       plotlyOutput("summaryIndexPlot")),
-             tabPanel("Table", width = 12,
+             tabPanel("Tabla de datos", width = 12,
                       dataTableOutput("index_table")))
       )),
     fluidRow(
@@ -85,9 +85,9 @@ ui <- navbarPage(
       tabBox(id = "deaths",
              title = h3("Muertes per capita", align = "center"),
              height = "500px",
-             tabPanel("Plot",
+             tabPanel("Grafico",
                       plotlyOutput("summaryDeathsPerCapitaPlot")),
-             tabPanel("Table",
+             tabPanel("Tabla de datos",
                       dataTableOutput("death_table")))
       )),    
     br(),    
@@ -102,7 +102,7 @@ ui <- navbarPage(
         align = "center")
     ), 
     
-    p("These data were last updated on 2020-04-15", align = "center")
+    p("Estos datos se actualizaron por última vez el 15 de abril de 2020.", align = "center")
     
     
     
