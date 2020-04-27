@@ -23,10 +23,15 @@ library(readr)
 ```{r}
 knitr::opts_chunk$set(fig.width=24, fig.height=16) 
 
+library(viridis)
+library(ggthemes)
+
+
 mexico <- read_rds("../data/analysis.rds")
 latest <- max(mexico[ "Days Since the First Case (in Mexico)"])
 polar <- mexico %>% 
   filter(`Days Since the First Case (in Mexico)`== latest) %>% 
+#  filter(`State Name` == "Mex") %>% 
   select(`State Name`, School_Closure,
          Business_Closure,
          Public_Events_Cancelled,
@@ -35,18 +40,17 @@ polar <- mexico %>%
          Internal_Travel_Control,
          International_Travel_Controls) %>% 
   pivot_longer(-`State Name`, names_to = "Restriction", values_to = "amount") %>% 
-  mutate(Restriction = case_when(Restriction == "Business_Closure" ~              "Business\nClosure",
-                                 Restriction == "Information_Campaign" ~          " Info\nCamp",
-                                 Restriction == "Internal_Travel_Control" ~       "Internal\nTravel",
-                                 Restriction == "International_Travel_Controls" ~ "  International\nTravel",
-                                 Restriction == "Public_Events_Cancelled" ~       "Public\nEvents", 
-                                 Restriction == "Public_Transit_Suspended" ~      "Public\nTransit",
-                                 Restriction == "School_Closure" ~                "School\nClosure"))
+  mutate(Restriction = case_when(Restriction == "Business_Closure" ~              "  Área\nlaboral  ",
+                                 Restriction == "Information_Campaign" ~          "   Campaña\ninformativa",
+                                 Restriction == "Internal_Travel_Control" ~       " Viajes\n    domésticos",
+                                 Restriction == "International_Travel_Controls" ~ " Viajes\n inter.",
+                                 Restriction == "Public_Events_Cancelled" ~       " Eventos\npúblicos", 
+                                 Restriction == "Public_Transit_Suspended" ~      " Transporte\npúblico",
+                                 Restriction == "School_Closure" ~                "Cierre\nde escuelas"))
 
-library(viridis)
-library(ggthemes)
 
 #base 100 height 12000
+# base 15 1800
 polar  %>%  
 #  filter(`State Name` == "Aguascalientes") %>% 
 ggplot(aes(x = Restriction, ymax=amount, ymin = 0, fill = Restriction)) +
@@ -62,9 +66,8 @@ ggplot(aes(x = Restriction, ymax=amount, ymin = 0, fill = Restriction)) +
 				legend.position = "none"
 				) +
   scale_color_viridis(end = .6, option = "B") +
-  scale_y_continuous(expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0), limits = c(0, 1.1)) +
   facet_wrap(vars(`State Name`)) +
-  ylim(0, 1.1) +
 	coord_polar(theta = "x") -> gg
 
 png(filename="../www/polarBarChart.png", width=1800, height=1800)
