@@ -48,24 +48,7 @@ ui <- navbarPage(
                column(width = 2,
                     align = "center",
                     fluidRow(
-                      img(src = "mexicosocial.png", width = 200)
-                    ),
-                    br(),
-                    br(),
-                    fluidRow(
-                      img(src = "cide.png", width = 100)
-                    ),
-                    br(),
-                    br(),
-                    fluidRow(
-                      img(src = "UNAM.png", width = 100)
-                    )
-             ),
-             column(width = 1, offset = 1),
-             column(width = 2,
-                    align = "center",
-                    fluidRow(
-                      img(src = "Tufts_univ.png", width = 200)
+                      img(src = "UNAM.png", width = 150)
                     ),
                     br(),
                     br(),
@@ -75,8 +58,28 @@ ui <- navbarPage(
                     br(),
                     br(),
                     fluidRow(
-                      img(src = "smsp.png", width = 200)
+                      img(src = "cide.png", width = 150)
                     )
+             ),
+             column(width = 1, offset = 1),
+             column(width = 2,
+                    align = "center",
+                    fluidRow(
+                      img(src = "mexicosocial.png", width = 200)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "smsp.png", width = 200)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "Tufts_univ.png", width = 200)
+                    ),
+                    fluidRow(
+                      img(src = "LOGO-TAP.png", width = 200)
+                    ),
              ))
       )
     ),
@@ -136,7 +139,7 @@ ui <- navbarPage(
     
     fluidRow(
       column(width =12, align = "center",
-     sliderInput("spider", "Pick a day:",
+     sliderInput("spider", h4(strong(tags$i("elige un día:"))),
                  min = 1, max = 57,
                  value = 1, step = 1,
                  animate =
@@ -449,7 +452,7 @@ server <- function(input, output, session) {
   
   output$index_table <- renderDataTable({
     mexico_latest %>% 
-      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,2)) %>% 
+      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,1)) %>% 
       select(`State Name`, `Policy Index Adj Time Mobility`) %>% 
       rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
       rename(Estado = `State Name`) %>% 
