@@ -51,3 +51,9 @@ data/
 *.html
 
 tests/
+rsconnect/
+
+Thumbs.db
+
+TranslatedText.xlsx
+text.xlsx
