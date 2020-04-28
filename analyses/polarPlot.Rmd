@@ -42,6 +42,13 @@ polar <- mexico %>%
          Information_Campaign,
          Internal_Travel_Control,
          International_Travel_Controls) %>% 
+  mutate(Workplace_Closure = case_when(round(Workplace_Closure, 2) == 0.3 ~ .5,
+                                       TRUE ~  Workplace_Closure)) %>% 
+  mutate(Public_Events_Cancelled = case_when(round(Public_Events_Cancelled, 2) == 0.3 ~ .5,
+                                       TRUE ~  Public_Events_Cancelled)) %>% 
+  
+  mutate(Public_Transit_Suspended = case_when(round(Public_Transit_Suspended, 2) == 0.3 ~ .5,
+                                       TRUE ~  Public_Transit_Suspended)) %>% 
   pivot_longer(-`State Name`, names_to = "Restriction", values_to = "amount") %>% 
   mutate(Restriction = case_when(Restriction == "Workplace_Closure" ~              "  Área\nlaboral  ",
 
@@ -51,9 +58,6 @@ polar <- mexico %>%
                                  Restriction == "Public_Events_Cancelled" ~       " Eventos\npúblicos", 
                                  Restriction == "Public_Transit_Suspended" ~      " Transporte\npúblico",
                                  Restriction == "School_Closure" ~                "Cierre\nde escuelas"))
-
-
-
 
 
 polar  %>%  
@@ -109,7 +113,6 @@ dev.off()
 }
 
 walk(1:latest, spider)
-
 ```
 
 
