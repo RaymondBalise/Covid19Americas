@@ -136,7 +136,7 @@ ui <- navbarPage(
     fluidRow(
       column(width =12, align = "center",
      sliderInput("spider", h4(strong(tags$i("elige un día:"))),
-                 min = 1, max = 57,
+                 min = 1, max = 61,
                  value = 1, step = 1,
                  animate =
                    animationOptions(interval = 300, loop = TRUE)))),
