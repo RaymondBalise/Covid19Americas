@@ -453,8 +453,7 @@ server <- function(input, output, session) {
       select(`State Name`, `Policy Index Adj Time Mobility`) %>% 
       rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
       rename(Estado = `State Name`) %>% 
-      datatable(., 
-                options = list(dom = 't'), 
+      datatable(.,
                 rownames = FALSE)
   })  
   
@@ -498,8 +497,7 @@ server <- function(input, output, session) {
       select(`State Name`, `Deaths per capita`) %>% 
       rename(`Muertes per capita * 1,000,000` = `Deaths per capita`) %>%    
       rename(Estado = `State Name`) %>% 
-      datatable(., 
-                options = list(dom = 't'),
+      datatable(.,
                 rownames = FALSE)
   })  
   
