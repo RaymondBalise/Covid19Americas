@@ -12,8 +12,7 @@ ui <- navbarPage(
   tabPanel(
     h4("Inicio"),
     fluidRow(
-      h1(strong("Observatorio de Políticas Públicas de COVID-19 
-                en América Latina"), align = "center", style = "color: black")
+      h1(strong("OBSERVATORIO PARA LA CONTENCIÓN DEL COVID-19 EN AMERICA LATINA "), align = "center", style = "color: black")
     ),
     br(),
     br(),
@@ -165,7 +164,7 @@ ui <- navbarPage(
     ),
     
     fluidRow(
-      h4(strong("Las líneas grises muestran los valores más pequeños o más grandes de todos los estados."), align = "center", style = "color: red")
+      h4(strong("Las líneas grises muestran el valor mínimo y máximo que se obtuvo en todos los estados por día."), align = "center", style = "color: red")
     ),
     br(),
     fluidRow(
