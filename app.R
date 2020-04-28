@@ -12,7 +12,7 @@ ui <- navbarPage(
   tabPanel(
     h4("Inicio"),
     fluidRow(
-      h1(strong("OBSERVATORIO PARA LA CONTENCIÓN DEL COVID-19 EN AMERICA LATINA "), align = "center", style = "color: black")
+      h1(strong("OBSERVATORIO PARA LA CONTENCIÓN DEL COVID-19 EN AMÉRICA LATINA "), align = "center", style = "color: black")
     ),
     br(),
     br(),
@@ -21,11 +21,7 @@ ui <- navbarPage(
       column(width = 12,
              align = "center",
              br(),
-             p("Un observatorio de políticas públicas y datos de salud por 
-               estado para México por el Instituto de Estudios Avanzados de las 
-               Américas de Miami y el Departamento de Ciencias de la Salud 
-               Pública de la Facultad de Medicina Miller de la Universidad 
-               de Miami", style = "font-size: 24px")
+             p("Un observatorio de políticas públicas y datos de salud por estado para México, elaborado por por el Instituto de Estudios Avanzados de las Américas y el Departamento de Ciencias de la Salud Pública de la Facultad de Medicina Miller de la Universidad de Miami.", style = "font-size: 24px")
       )),
     fluidRow(
       column(width = 12,
@@ -117,7 +113,7 @@ ui <- navbarPage(
       tabBox(id = "index",
              title = h3("Índice de política pública ajustado por tiempo y movilidad", align = "center"),
              height = "500px",
-             tabPanel("Grafico", width = 12,
+             tabPanel("Gráfico", width = 12,
                       plotlyOutput("summaryIndexPlot")),
              tabPanel("Tabla de datos", width = 12,
                       dataTableOutput("index_table")))
@@ -125,9 +121,9 @@ ui <- navbarPage(
     fluidRow(
       column(offset = 3, width = 12,
       tabBox(id = "deaths",
-             title = h3("Muertes per capita", align = "center"),
+             title = h3("Muertes per cápita", align = "center"),
              height = "500px",
-             tabPanel("Grafico",
+             tabPanel("Gráfico",
                       plotlyOutput("summaryDeathsPerCapitaPlot")),
              tabPanel("Tabla de datos",
                       dataTableOutput("death_table")))
@@ -135,7 +131,7 @@ ui <- navbarPage(
     br(),    
     br(),    
     br(),
-    h4(strong("Las líneas moradas cortas representan respuestas parciales. La línea roja larga representa respuestas completas."), align = "center", style = "color: red"),
+    h4(strong("Las siguientes gráficas muestran la adopción de los siete tipos de medidas preventivas considerados en el índice de política pública, por entidad federativa. Las líneas cortas representan adopción parcial de medidas en esta área. Las líneas largas representan adopción total."), align = "center", style = "color: red"),
     
     fluidRow(
       column(width =12, align = "center",
@@ -443,7 +439,7 @@ server <- function(input, output, session) {
       ),
       size = 2) +
       scale_shape_identity() +
-      xlab("Días transcurridos desde el primer caso (en México)") +
+      xlab("Días desde el primer caso en México") +
       ylab("Índice de política")
     
     
@@ -488,8 +484,8 @@ server <- function(input, output, session) {
                      shape = 21),
                  size = 2) +
       scale_shape_identity() +
-      ylab("Muertes per capita") +
-      xlab("Días transcurridos desde el primer caso (en México)")
+      ylab("Muertes per cápita") +
+      xlab("Días desde el primer caso en México")
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
   })
@@ -544,7 +540,7 @@ server <- function(input, output, session) {
                 size = 2,
                 shape = 4) +
       ylab("Índice")  +
-      xlab("Días transcurridos desde el primer caso (en México)")
+      xlab("Días desde el primer caso en México")
   }) 
 
   # Single State Plot / Death Per Capita Plot ----
@@ -612,7 +608,7 @@ server <- function(input, output, session) {
                  color = "orange",
                  size = 2) +
       ylab("Movilidad") +
-      xlab("Días transcurridos desde el primer caso (en México)")
+      xlab("Días desde el primer caso en México")
       expand_limits(x = 0, y = 0)
     
     ggplotly(gg, tooltip=c("x", "y", "group"))
