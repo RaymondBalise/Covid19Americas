@@ -96,12 +96,20 @@ ui <- navbarPage(
     h4(strong("Las líneas moradas cortas representan respuestas parciales. La línea roja larga representa respuestas completas."), align = "center", style = "color: red"),
     
     fluidRow(
+      column(width =12, align = "center",
+     sliderInput("spider", "Pick a day:",
+                 min = 1, max = 57,
+                 value = 1, step = 1,
+                 animate =
+                   animationOptions(interval = 300, loop = TRUE)))),
+    
+    fluidRow(
       column(
         width =12,
-        img(src = "polarBarChart.png"), 
+        imageOutput("spiderPlot"),
         align = "center")
     ), 
-    
+
     p("Estos datos se actualizaron por última vez el 23 de abril de 2020.", align = "center")
     
     
@@ -246,11 +254,12 @@ server <- function(input, output, session) {
   
   output$index_table <- renderDataTable({
     mexico_latest %>% 
-      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,1)) %>% 
+      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,2)) %>% 
       select(`State Name`, `Policy Index Adj Time Mobility`) %>% 
       rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
       rename(Estado = `State Name`) %>% 
-      datatable(., ,
+      datatable(., 
+                options = list(dom = 't'), 
                 rownames = FALSE)
   })  
   
@@ -294,7 +303,8 @@ server <- function(input, output, session) {
       select(`State Name`, `Deaths per capita`) %>% 
       rename(`Muertes per capita * 1,000,000` = `Deaths per capita`) %>%    
       rename(Estado = `State Name`) %>% 
-      datatable(.,
+      datatable(., 
+                options = list(dom = 't'),
                 rownames = FALSE)
   })  
   
@@ -591,8 +601,18 @@ server <- function(input, output, session) {
       addLegend(pal = pal, values = ~`Policy Index Adj Time Mobility`, opacity = 0.7, title = NULL,
                 position = "bottomright"
       )
-    
   })
+# Spider plot ----    
+    
+    output$spiderPlot <- renderImage({
+   
+        return(list(
+          src = paste0("www/polarBarChart", input$spider, ".png"),
+          contentType = "image/png",
+          alt = "Face"
+        ))
+   
+    }, deleteFile = FALSE)
 }
 
 shinyApp(ui, server)
