@@ -247,6 +247,10 @@ ui <- navbarPage(
     br(),
     leafletOutput("map", height = 925)
   ),
+  
+  # ++++++++++++++++++++++
+  # TAB 6 : METHODS   ----
+  # ++++++++++++++++++++++
   tabPanel(
     h4("Metodología"),
     br(),
