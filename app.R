@@ -44,7 +44,7 @@ ui <- navbarPage(
                column(width = 2,
                     align = "center",
                     fluidRow(
-                      img(src = "UNAM.png", width = 150)
+                      img(src = "LOGO-TAP.png", width = 200)
                     ),
                     br(),
                     br(),
@@ -72,10 +72,7 @@ ui <- navbarPage(
                     br(),
                     fluidRow(
                       img(src = "Tufts_univ.png", width = 200)
-                    ),
-                    fluidRow(
-                      img(src = "LOGO-TAP.png", width = 200)
-                    ),
+                    )
              ))
       )
     ),
@@ -241,8 +238,23 @@ ui <- navbarPage(
     h4("Mapa"),
     h2("Mapa del índice de políticas ajustado por tiempo y movilidad"),
     br(),
-    leafletOutput("map", height = 925)
+    radioButtons(inputId = "week", label = "Seleccione un estado:",
+                 choices = c("2020-03-09" = "2020-03-09",
+                             "2020-03-16" = "2020-03-16",
+                             "2020-03-23" = "2020-03-23",
+                             "2020-03-30" = "2020-03-30",
+                             "2020-04-06" = "2020-04-06",
+                             "2020-04-13" = "2020-04-13",
+                             "2020-04-20" = "2020-04-20",
+                             "2020-04-27" = "2020-04-27"),
+                 selected = "2020-04-27", inline = TRUE),
+    br(),
+    leafletOutput("map", height = 900)
   ),
+  
+  # ++++++++++++++++++++++
+  # TAB 6 : METHODS   ----
+  # ++++++++++++++++++++++
   tabPanel(
     h4("Metodología"),
     br(),
@@ -756,7 +768,7 @@ server <- function(input, output, session) {
     
     mexico_latest <- mexico %>% 
       group_by(`State Name`) %>%
-      slice(which.max(as.Date(Date, '%Y-%m-%d')))
+      filter(Date == input$week)
     
     #join data to spdf
     mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Policy Index Adj Time Mobility")],
