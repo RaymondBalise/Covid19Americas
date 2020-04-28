@@ -52,13 +52,16 @@ polar <- mexico %>%
                                  Restriction == "School_Closure" ~                "Cierre\nde escuelas"))
 
 
-#base 100 height 12000
-# base 15 1800
+
+
+
 polar  %>%  
-#  filter(`State Name` == "Aguascalientes") %>% 
-ggplot(aes(x = Restriction, ymax=amount, ymin = 0, fill = Restriction)) +
+#filter(`State Name` == "Aguascalientes") %>% 
+ggplot(aes(x = Restriction, ymax=amount, ymin = 0)) +
+  geom_hline(yintercept = .5, color = "lightgray") +
+  #geom_hline(yintercept = 1, color = "darkgray") +
   geom_linerange(aes(ymax = .95), stat = "identity", color = "white") +
-	geom_linerange(aes(color = amount), stat = "identity",  size  = 2) +
+	geom_linerange(aes(color = "red"), stat = "identity",  size  = 2) +
 	theme_gray(base_size = 15) +
 	theme(panel.border = element_blank(),
 				legend.key = element_blank(),
@@ -68,11 +71,35 @@ ggplot(aes(x = Restriction, ymax=amount, ymin = 0, fill = Restriction)) +
 				axis.title = element_blank() ,
 				legend.position = "none"
 				) +
-  scale_color_viridis(end = .6, option = "B") +
-  scale_y_continuous(expand = c(0,0), limits = c(0, 1.1)) +  
+  #scale_color_viridis(end = .6, option = "B") +
 
+  scale_y_continuous(expand = c(0,0), limits = c(0, 1.1)) +
   facet_wrap(vars(`State Name`)) +
 	coord_polar(theta = "x") -> gg
+
+
+
+# #base 100 height 12000
+# # base 15 1800
+# polar  %>%  
+# #  filter(`State Name` == "Aguascalientes") %>% 
+# ggplot(aes(x = Restriction, ymax=amount, ymin = 0, fill = Restriction)) +
+#   geom_linerange(aes(ymax = .95), stat = "identity", color = "white") +
+# 	geom_linerange(aes(color = amount), stat = "identity",  size  = 2) +
+# 	theme_gray(base_size = 15) +
+# 	theme(panel.border = element_blank(),
+# 				legend.key = element_blank(),
+# 				axis.ticks = element_blank(),
+# 				axis.text.y = element_blank(),
+# 				panel.grid  = element_blank(),
+# 				axis.title = element_blank() ,
+# 				legend.position = "none"
+# 				) +
+#   scale_color_viridis(end = .6, option = "B") +
+#   scale_y_continuous(expand = c(0,0), limits = c(0, 1.1)) +  
+# 
+#   facet_wrap(vars(`State Name`)) +
+# 	coord_polar(theta = "x") -> gg
 
 png(filename=paste0("../www/polarBarChart", day, ".png"), width=1800, height=1800)
 print(gg)
