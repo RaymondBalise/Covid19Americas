@@ -96,11 +96,20 @@ ui <- navbarPage(
     h4(strong("Las líneas moradas cortas representan respuestas parciales. La línea roja larga representa respuestas completas."), align = "center", style = "color: red"),
     
     fluidRow(
+      column(width =12, align = "center",
+     sliderInput("spider", "Pick a day:",
+                 min = 1, max = 57,
+                 value = 1, step = 1,
+                 animate =
+                   animationOptions(interval = 300, loop = TRUE)))),
+    
+    fluidRow(
       column(
         width =12,
-        img(src = "polarBarChart.png"), 
+        imageOutput("spiderPlot"),
         align = "center")
     ), 
+
     
     p("Estos datos se actualizaron por última vez el 23 de abril de 2020.", align = "center")
     
@@ -580,8 +589,18 @@ server <- function(input, output, session) {
       addLegend(pal = pal, values = ~`Policy Index Adj Time Mobility`, opacity = 0.7, title = NULL,
                 position = "bottomright"
       )
-    
   })
+# Spider plot ----    
+    
+    output$spiderPlot <- renderImage({
+   
+        return(list(
+          src = paste0("www/polarBarChart", input$spider, ".png"),
+          contentType = "image/png",
+          alt = "Face"
+        ))
+   
+    }, deleteFile = FALSE)
 }
 
 shinyApp(ui, server)

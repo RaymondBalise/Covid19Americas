@@ -80,7 +80,7 @@ dev.off()
 
 }
 
-#walk(1:latest, spider)
+walk(1:latest, spider)
 
 ```
 
