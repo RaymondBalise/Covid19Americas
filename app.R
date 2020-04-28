@@ -246,10 +246,166 @@ ui <- navbarPage(
     leafletOutput("map", height = 925)
   ),
   tabPanel(
-    h4("Metodología")
+    h4("Metodología"),
+    br(),
+    h3(strong("Observatorio Estatal para la Contención del COVID-19"), 
+       align = "center"),
+    br(),
+    br(),
+    column(width = 10,
+           offset = 1,
+           align = "left",
+           p('El Observatorio Estatal para la Contención del COVID-19 (ObsContenCOVID) 
+    es una plataforma que presenta información sistemática y actualizada día con día sobre las 
+    medidas que los gobiernos estatales en México han adoptado para fomentar el distanciamiento social, reducir la movilidad e 
+    informar a la población sobre la enfermedad. La herramienta incluye también información sobre el grado en que estas medidas 
+    han sido observadas por los ciudadanos, con base en el movimiento registrado entre la población.', style = "font-size:150%"),
+           p('La primera aportación de este Observatorio es el cálculo de un índice que toma como base en', tags$i('EL Oxford COVID-19 Government Response Tracker'), '(OxCGRT), 
+una herramienta desarrollada por la Universidad Oxford que consiste en un listado de medidas al alcance de los gobiernos para disminuir la 
+velocidad de transmisión del virus [5].  Utilizamos el  OxCGRT para identificar las siete medidas preventivas relevantes a la situación de México: el cierre de escuelas; 
+la suspensión de actividades laborales presenciales; la cancelación de eventos públicos; la suspensión del transporte público; el desarrollo de campañas 
+informativas; la restricción de viajes y viajeros dentro del estado; y el control de viajes y viajeros internacionales.   OxCGRT califica estas medidas en una 
+forma ordinal y presenta una suma simple de ellas a través del tiempo, generando así un índice.', style = "font-size:150%"),
+           p('ObsContenCOVID parte del marco OxCGRT y codifica la respuesta de los gobiernos estatales en México, con base en la información disponible en las páginas 
+oficiales de cada una de las entidades federativas (Ver Anexo metodológico). Para cada estado, cada una de las siete políticas públicas mencionadas es medida 
+en forma diaria, a partir de la fecha de aparición del primer caso oficialmente reconocido en el país (el 27 de febrero). 
+La variables incluidas son: i) Cierre de escuelas, ii) Suspensión en área laboral, iii) Cancelación eventos públicos, iv) Suspensión transporte público, 
+v) Desarrollo de Campañas informativas, vi) Restricción de viajes dentro del estado, y vii) Control de viajes internacionales. 
+De manera similar a la metodología de OxCGRT, cada medida preventiva es calificada con una escala ordinal entre 0 y 1, en donde “0” implica que no existe registro 
+de la aplicación de dicha medida en el estado, “0.5” registro parcial y/o no obligatoria y “1” que dicha política se implementó de manera total y 
+obligatoria en la entidad. Cabe señalar que cada dato pasa por tres revisiones independientes, antes de ser agregado a la base de datos. De tal manera, 
+cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las distintas dimensiones y se actualiza diariamente, conforme cambian las medidas adoptadas.',
+             style = "font-size:150%"),
+           
+           p('Como segundo paso, ObsContenCOVID retoma el índice agregado para cada estado y lo pondera con base en la fecha de entrada en 
+      vigor de cada una de las medidas en la entidad respectiva, nuevamente tomando como base el 27 de febrero, fecha del primer caso registrado. 
+      Se presentan dos formas de ponderar a través del tiempo: una que aplica un peso uniforme por día, y otra que da un mayor peso a los días más cercanos 
+      al 27 de febrero. Esta estrategia permite ajustar el índice estatal para que refleje no sólo la cantidad y rigor de las medidas adoptadas, sino 
+      su adopción a tiempo. Uno de los hallazgos importantes de este ejercicio es que el ritmo de implementación de medidas preventivas ha variado 
+      de manera considerable en el país, lo cual puede tener implicaciones importantes en el ritmo e intensidad de propagación de la enfermedad.', style = "font-size:150%"),
+           p('Finalmente, como tercer y último paso el índice compuesto es ponderado y ajustado con base en el éxito de las medidas en la contención de 
+      la movilidad poblacional en la entidad federativa utilizando información de Retargetly Meta-data Movilidad México GPS Mobile App 
+      sobre la reducción efectiva de la movilidad en cada uno de los estados, relativo a la movilidad convencional observada tres semanas previo 
+      al inicio de la contingencia.[2] Esta ponderación es crucial para capturar la eficacia de las políticas públicas.', style = "font-size:150%"),
+           p('En resumen, el índice estatal del ObcContenCOVID es un retrato diario, para todas y cada una de las entidades federativas, 
+      de: 1) la amplitud de las medidas adoptadas por los gobiernos estatales conforme a recomendaciones internacionales; 
+      2) la oportunidad en su adopción; y 3) la respuesta poblacional, en términos de reducción de la movilidad. 
+      Es basado en este índice, que toma valores de 0 a 1003 y puede ser interpretado como un porcentaje, 
+      que se hace un ranqueo de las entidades federativas.', style = "font-size:150%"),
+           p('Con ello ofrecemos una herramienta valiosa para revisar no sólo lo hecho hasta aquí, sino también lo que se está 
+      haciendo ahora mismo, en este momento crítico, para la contención de la epidemia. Nuestro objetivo al ponerlo al 
+      alcance del público y sobre todo de las autoridades estatales es proveer información oportuna, que contribuya a tomar 
+      mejores decisiones hacia el futuro. ', style = "font-size:150%"),
+           br(),
+           br(),
+           h4(strong("Limitaciones"), align = "center"),
+           p('El ejercicio que aquí se presenta y el ObsContenCOVID en general, tiene limitaciones y no debe tomarse como un juicio 
+      último o de valor sobre la actuación de los gobiernos, ni como una predicción de 
+      los patrones geográficos de la enfermedad. ', style = "font-size:120%"),
+           p('A continuación compartimos algunos puntos a tomar en consideración:', style = "font-size:120%"),
+           p(
+             tags$ul(style = "font-size:120%",
+               tags$li('Los siete tipos de medidas preventivas consideradas tiene el mismo peso en la construcción del índice. 
+                       Se podría argumentar que no todas las medidas de política pública tienen la misma eficacia y por lo tanto, 
+                       deberían de tener distinto peso en la escala de la Universidad Oxford.  Sin embargo, la evidencia sobre qué tipo 
+                       de intervención funciona mejor para abatir el COVID-19 es limitada en este momento.  Por esta razón, 
+                       se realiza una agregación simple de intervenciones que nos permite capturar, en un solo índice, la 
+                       amplitud de las disposiciones adoptadas en las distintas entidades como parte de la política pública de 
+                       prevención del contagio, sin aplicar un juicio sobre la eficacia potencial de cada uno.'),
+               tags$li('El índice clasifica en forma ordinal, y por ende aproximada, la eficacia de cada una de las siete 
+                       acciones para promover el distanciamiento físico. Por el momento, no es factible tener una medición 
+                       más precisa de cada una de ellas, como el porcentaje de cobertura.'),
+               tags$li('El índice compuesto se diseñó para ponderar el tiempo y la movilidad poblacional y se 
+                       planea analizar otras formas de diseñar el índice. Según el análisis hecho hasta el momento, 
+                       los cambios en la ponderación tienen sólo un impacto marginal en la posición de los estados.  
+                       Se podría argumentar que el impacto es mayor de lo que se reporta aquí.'),
+               tags$li('La base de datos incluye la información oficial actualizada del número de casos diagnosticados y de 
+                       muertes por COVID-19. Sin embargo, se debe tratar estos datos como muy preliminares y sujetos a ajustes importantes. 
+                       Con base en la experiencia internacional, es de esperarse que estos indicadores sufran cambios al alza con la ampliación 
+                       de las pruebas y la reclasificación de personas fallecidas por otras causas.  Por esta razón, es difícil medir el impacto 
+                       de las medidas capturadas en el índice  sobre la salud de la población.'),
+               tags$li('Es imposible en este momento establecer una relación causal entre el impacto del COVID-19 en la mortalidad y 
+                       la política pública. Una vez que se cuente con una serie de tiempo más larga y datos más precisos sobre el 
+                       acceso a los servicios de salud, el diagnóstico y la mortalidad se podrán analizar dichos aspectos causales'),
+               tags$li('Es importante tomar en cuenta que las diferentes entidades del país enfrentan una realidad distinta. 
+                       En cada estado, puede ser necesario adaptar la respuesta pública dependiendo de las circunstancias locales. 
+                       Especialmente importante es que los gobiernos tomen las decisiones económicas necesarias para que la población más 
+                       necesitada tenga las condiciones para cumplir con el distanciamiento físico'),
+               tags$li('El índice se concentra solo en las medidas de distanciamiento físico, sin considerar otros aspectos 
+                       relevantes de la respuesta de los gobiernos estatales a la pandemia, como la distribución de insumos, 
+                       la reconversión hospitalaria o las medidas económicas para mitigar el impacto entre la población pobre y los negocios'),
+               tags$li('Además, se podría decir que al ponderar con base en la fecha del primer caso nacional, asume que todos los 
+                       estados debieron actuar al mismo tiempo. Es decir "penaliza" o "premia" a todos por igual. Esto es correcto dada 
+                       la información limitada sobre los lugares de entrada del virus o los focos iniciales. Desde otra perspectiva, sin 
+                       embargo, actuar más tarde en algunos estados puede haber sido lo "correcto" con base en los fuertes costos económicos 
+                       de detener la actividad y los distintos ritmos de exposición al virus entre los estados')
+             )
+           )
+           
+    )
   ),
   tabPanel(
-    h4("Contacto")
+    h4("Contacto"),
+    br(),
+    h4("Son bienvenidos los comentarios, propuestas de ajuste y contribuciones al
+       ObsContenCOVID, mismos que pueden ser enviados a Héctor Arreola-Ornelas (harreola@me.com) 
+       y Profesor Mike Touchton (miketouchton@miami.edu)", align = "center"),
+    br(),
+    br(),
+    fluidRow(
+      column(width = 3,
+             tags$img(src = "mike.jpg", height = "300px", width  = "300px"), 
+             offset = 1,
+             align = "center"), 
+      column(width = 6,
+             fluidRow(
+               h4(HTML("Mike Touchton, Ph.D <br> 
+                          Profesor Asociado de Ciencias Políticas y Jefe de la Facultad de Salud Global <br>
+                          en el Instituto de Estudios Avanzados de las Américas (Universidad de Miami) <br>
+                          miketouchton@miami.edu")
+               ) 
+             ),
+             br(),
+             fluidRow( 
+               p('El Dr. Touchton tiene experiencia amplia en el diseño y administración 
+                  de evaluaciones de impacto de políticas. Su investigación enfatiza 
+                  la gobernanza de políticas, la prestación de servicios, y los 
+                  resultados de salud en el Sur Global, especialmente para las 
+                  poblaciones vulnerables y marginadas. Es autor de dos docenas de 
+                  artículos de revistas academicas y dos libros, más recientemente,', 
+                 tags$i('Democracy at Work: Pathways to Well-being in Brazil'), '(Cambridge University Press 2019).', 
+                 style = "font-size:160%")
+             )
+      )
+    ), #end mike 
+    br(),
+    br(),
+    fluidRow(
+      column(width = 3,
+             tags$img(src = "mike.jpg", height = "300px", width  = "300px"), 
+             offset = 1,
+             align = "center"), 
+      column(width = 6,
+             fluidRow(
+               h4(HTML("Héctor Arreola-Ornelas, Ph.D <br> 
+                          Profesor Asociado de Ciencias Políticas y Jefe de la Facultad de Salud Global <br>
+                          en el Instituto de Estudios Avanzados de las Américas (Universidad de Miami) <br>
+                          harreola@me.com")
+               ) 
+             ),
+             br(),
+             fluidRow( 
+               p('El Dr. Touchton tiene experiencia amplia en el diseño y administración 
+                  de evaluaciones de impacto de políticas. Su investigación enfatiza 
+                  la gobernanza de políticas, la prestación de servicios, y los 
+                  resultados de salud en el Sur Global, especialmente para las 
+                  poblaciones vulnerables y marginadas. Es autor de dos docenas de 
+                  artículos de revistas academicas y dos libros, más recientemente,', 
+                 tags$i('Democracy at Work: Pathways to Well-being in Brazil'), '(Cambridge University Press 2019).', 
+                 style = "font-size:160%")
+             )
+      )
+    ) #end hector
   )
 )
 
