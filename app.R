@@ -28,17 +28,57 @@ ui <- navbarPage(
                Pública de la Facultad de Medicina Miller de la Universidad 
                de Miami", style = "font-size: 24px")
       )),
-      fluidRow(
-        column(width = 12,
+    fluidRow(
+      column(width = 12,
              align = "center",
              img(src = "um.png"),
-             h4("en colaboración con:"),
              br(),
-             img(src = "mia.jpg", width = 400),
              br(),
-             img(src = "arts.jpeg", width= 450),
+             tags$style(".img {
+                            margin-left:35px;
+                            margin-right:35px;
+                          }"),
+             div(img(src = "mia.png", width = 400, class="img"),
+                 img(src = "arts.png", width= 375, height = 170, class="img"),
+                 img(src = "dphs.png", width = 400, height = 140, class="img")),
+            br(),
+             h4(strong("en colaboración con:")),
              br(),
-             img(src = "miller.png", width = 450, height = 220)
+             fluidRow(
+               column(width = 1, offset = 2),
+               column(width = 2,
+                    align = "center",
+                    fluidRow(
+                      img(src = "mexicosocial.png", width = 200)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "cide.png", width = 100)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "UNAM.png", width = 100)
+                    )
+             ),
+             column(width = 1, offset = 1),
+             column(width = 2,
+                    align = "center",
+                    fluidRow(
+                      img(src = "Tufts_univ.png", width = 200)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "cicsaanahuac.png", width = 200)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "smsp.png", width = 200)
+                    )
+             ))
       )
     ),
     fluidRow(),
@@ -203,7 +243,7 @@ ui <- navbarPage(
     h4("Mapa"),
     h2("Mapa del índice de políticas ajustado por tiempo y movilidad"),
     br(),
-    leafletOutput("map", height = 900)
+    leafletOutput("map", height = 925)
   ),
   tabPanel(
     h4("Metodología")
@@ -571,7 +611,7 @@ server <- function(input, output, session) {
                                      by.x = "ADMIN_NAME", by.y = "State Name")
     
     #bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
-    pal <- colorBin("YlOrRd", domain = mexico_latest$`Policy Index Adj Time Mobility`)
+    pal <- colorBin("BrBG", domain = mexico_latest$`Policy Index Adj Time Mobility`)
     
     labels <- sprintf(
       "<strong>%s</strong><br/>%g índice de política",
@@ -600,7 +640,11 @@ server <- function(input, output, session) {
           direction = "auto")) %>%
       addLegend(pal = pal, values = ~`Policy Index Adj Time Mobility`, opacity = 0.7, title = NULL,
                 position = "bottomright"
-      )
+      ) %>% 
+      setView(lng = -103.2,
+              lat = 23.95,
+              zoom = 6)
+
   })
 # Spider plot ----    
     

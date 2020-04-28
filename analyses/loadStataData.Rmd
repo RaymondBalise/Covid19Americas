@@ -34,7 +34,7 @@ Data from Touchton, Michael <miketouchton@miami.edu> Saturday, Sunday, April 19,
 Written approval to put sheets on web is pending
 
 ```{r}
-analysis <- read_stata("../data/covid-19 abril 23.dta") %>% 
+analysis <- read_stata("../data/covid-19 abril 23.dta", encoding = "latin1") %>% 
   rename(`Days Since the First Case (in Mexico)`  = Days) %>% 
   rename(`Total Cases`  = Total_Cases) %>% 
   rename(`Policy Index Adjusted for Time` = Policy_Index_Adjusted_Time) %>% 
@@ -43,12 +43,15 @@ analysis <- read_stata("../data/covid-19 abril 23.dta") %>%
   rename(`Cases per capita` = Cases_per_capita) %>% 
   rename(`Deaths per capita` = Deaths_per_capita) %>%
   rename(`Mobility Index` = Mobility_Index) %>% 
-  mutate(State_Name = stri_encode(State_Name, "", "UTF-8")) %>% # accents
-  mutate(`State Name` = case_when(State_Name == "Michoac‡n" ~ "Michoacan",
-                                State_Name == "Nuevo Le—n" ~ "Nuevo Leon",
-                                State_Name == "QuerŽtaro" ~"Queretaro",
-                                State_Name == "San Luis Potos’" ~ "San Luis Potosi",
-                                State_Name == "Yucat‡n" ~ "Yucatan",
+  mutate(State_Name = stri_encode(State_Name, "latin1", "UTF-8")) %>% # accents
+  mutate(`State Name` = case_when(State_Name == "MichoacÂn" ~ "Michoacan",
+                                State_Name == "Nuevo LeÂn" ~ "Nuevo Leon",
+                                State_Name == "QuerÂtaro" ~"Queretaro",
+                                State_Name == "San Luis PotosÂ" ~ "San Luis Potosi",
+                                State_Name == "YucatÂn" ~ "Yucatan",
+                                #changes for maps
+                                State_Name == "Mex"~"Mexico" , 
+                                State_Name == "Ciudad de Mexico"~"Distrito Federal",
                                 TRUE ~ State_Name))
 
 write_rds(analysis, "../data/analysis.rds")
