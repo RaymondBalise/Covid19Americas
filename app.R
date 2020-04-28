@@ -110,7 +110,6 @@ ui <- navbarPage(
         align = "center")
     ), 
 
-    
     p("Estos datos se actualizaron por última vez el 23 de abril de 2020.", align = "center")
     
     
@@ -130,12 +129,16 @@ ui <- navbarPage(
     ),
     br(),
     fluidRow(
-      column(width = 6, offset = 3, 
+      column(width = 3,
+             offset = 1,
+             align = "left",
              selectInput(inputId = "refPlace",
                          label = "Seleccione un estado:",
                          choices = stateNames,
                          selected = 1))
     ),
+    br(),
+    br(),
     fluidRow(
       column(offset = 1, width = 5, plotlyOutput("indexAdjTimeMobilityPlot")),
       column(width = 5, plotlyOutput("mobilityPlot"))
@@ -256,7 +259,7 @@ server <- function(input, output, session) {
       rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
       rename(Estado = `State Name`) %>% 
       datatable(., 
-                options = list(dom = 't'),
+                options = list(dom = 't'), 
                 rownames = FALSE)
   })  
   
@@ -319,6 +322,11 @@ server <- function(input, output, session) {
     ggplot() + 
       ggtitle("Índice de política pública ajustado por tiempo y movilidad") +
       theme_few(base_size = 20) +
+      theme(plot.title = element_text(size = 20),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_line(data = refIndexTimeMob, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
@@ -381,9 +389,13 @@ server <- function(input, output, session) {
       filter(!is.na(`Mobility Index`))
     
     gg <- ggplot() + 
-      ggtitle("Mobility") +
+      ggtitle("Movilidad") +
       theme_few(base_size = 20) +
-      theme(legend.title = element_blank()) +
+      theme(legend.title = element_blank(),
+            panel.background = element_rect(fill = "transparent"), # bg of the panel
+            plot.background = element_rect(fill = "transparent", color = NA), 
+            legend.background = element_rect(fill = "transparent"), # get rid of legend bg
+            legend.box.background = element_rect(fill = "transparent")) +
       geom_line(data = refMobilityIndex, 
                 aes(x=`Days Since the First Case (in Mexico)`, 
                     y = Smallest), 
