@@ -26,12 +26,11 @@ library(stringi)  # stri_encode
 ```
 
 # Info
-Data from Touchton, Michael <miketouchton@miami.edu> Saturday, Sunday, April 19, 2020 at 10:24 AM  Stacked data in Stata
+Data from Touchton, Michael <miketouchton@miami.edu> Tuesday, April 28, 2020 at 5:21 PM  Re: Walk through demonstration of the website
 
 ## Pre-processing
 
 ## Notes:
-Written approval to put sheets on web is pending
 
 ```{r}
 analysis <- read_stata("../data/covid-19 abril 27.dta", encoding = "latin1") %>% 
