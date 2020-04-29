@@ -44,7 +44,7 @@ ui <- navbarPage(
                column(width = 2,
                     align = "center",
                     fluidRow(
-                      img(src = "LOGO-TAP.png", width = 200)
+                      img(src = "UNAM.png", width = 200)
                     ),
                     br(),
                     br(),
@@ -72,6 +72,11 @@ ui <- navbarPage(
                     br(),
                     fluidRow(
                       img(src = "Tufts_univ.png", width = 200)
+                    ),
+                    br(),
+                    br(),
+                    fluidRow(
+                      img(src = "LOGO-TAP.png", width = 200)
                     )
              ))
       )
