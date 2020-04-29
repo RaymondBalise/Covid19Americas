@@ -771,8 +771,11 @@ server <- function(input, output, session) {
       filter(Date == input$week)
     
     #join data to spdf
-    mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Policy Index Adj Time Mobility")],
-                                     by.x = "ADMIN_NAME", by.y = "State Name")
+    # mexico_states_covid <- sp::merge(mexico_states, mexico_latest[c("State Name","Policy Index Adj Time Mobility")],
+    #                                  by.x = "ADMIN_NAME", by.y = "State Name")
+    # 
+    mexico_states_covid <- left_join(mexico_states, mexico_latest[c("State Name","Policy Index Adj Time Mobility")],
+                                     by = c("ADMIN_NAME" = "State Name"))
     
     #bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
     pal <- colorBin("BrBG", domain = mexico_latest$`Policy Index Adj Time Mobility`)

@@ -49,9 +49,6 @@ analysis <- read_stata("../data/covid-19 abril 27.dta", encoding = "latin1") %>%
                                 State_Name == "QuerÂtaro" ~"Queretaro",
                                 State_Name == "San Luis PotosÂ" ~ "San Luis Potosi",
                                 State_Name == "YucatÂn" ~ "Yucatan",
-                                #changes for maps
-                                State_Name == "Mex"~"Mexico" , 
-                                State_Name == "Ciudad de Mexico"~"Distrito Federal",
                                 TRUE ~ State_Name))
 
 write_rds(analysis, "../data/analysis.rds")
