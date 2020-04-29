@@ -357,9 +357,10 @@ cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las 
   tabPanel(
     h4("Contacto"),
     br(),
-    h4("Son bienvenidos los comentarios, propuestas de ajuste y contribuciones al
+    h3("Son bienvenidos los comentarios, propuestas de ajuste y contribuciones al
        ObsContenCOVID, mismos que pueden ser enviados a Héctor Arreola-Ornelas (harreola@me.com) 
-       y Profesor Mike Touchton (miketouchton@miami.edu)", align = "center"),
+       y Profesor Mike Touchton (miketouchton@miami.edu)", align = "center", 
+       style = "color:green"),
     br(),
     br(),
     fluidRow(
