@@ -392,26 +392,26 @@ cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las 
     br(),
     fluidRow(
       column(width = 3,
-             tags$img(src = "mike.jpg", height = "300px", width  = "300px"), 
+             tags$img(src = "hector.png", height = "300px", width  = "300px"), 
              offset = 1,
              align = "center"), 
       column(width = 6,
              fluidRow(
-               h4(HTML("Héctor Arreola-Ornelas, Ph.D <br> 
-                          Profesor Asociado de Ciencias Políticas y Jefe de la Facultad de Salud Global <br>
-                          en el Instituto de Estudios Avanzados de las Américas (Universidad de Miami) <br>
+               h4(HTML("Mtro. Héctor Arreola-Ornelas <br> 
+                          Director ejecutivo <br>
+                          Tómatelo a Pecho A.C. <br>
                           harreola@me.com")
                ) 
              ),
              br(),
              fluidRow( 
-               p('El Dr. Touchton tiene experiencia amplia en el diseño y administración 
-                  de evaluaciones de impacto de políticas. Su investigación enfatiza 
-                  la gobernanza de políticas, la prestación de servicios, y los 
-                  resultados de salud en el Sur Global, especialmente para las 
-                  poblaciones vulnerables y marginadas. Es autor de dos docenas de 
-                  artículos de revistas academicas y dos libros, más recientemente,', 
-                 tags$i('Democracy at Work: Pathways to Well-being in Brazil'), '(Cambridge University Press 2019).', 
+               p('Director ejecutivo de Tómatelo a Pecho A.C., e investigador visitante en el Instituto 
+                 de Estudios Avanzados para las Américas e investigador asociado del Centro de 
+                 Investigación en Ciencias de la Salud de la Universidad Anáhuac. Maestro en 
+                 Economía de la Salud. Sus líneas de investigación abarcan protección financiera, 
+                 políticas y sistemas de salud, economía laboral, evaluación económica y sistemas de 
+                 salud y cáncer. Es autor de 61 documentos de investigación y 12 capítulos en libros. 
+                 Pertenece al Sistema Nacional de Investigadores en México.', 
                  style = "font-size:160%")
              )
       )
