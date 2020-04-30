@@ -1,3 +1,5 @@
+# run loadStataData.Rmd
+# run polarPlot.Rmd
 source("global.R")
 
 ui <- navbarPage(
