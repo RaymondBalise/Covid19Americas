@@ -3,7 +3,7 @@
 source("global.R")
 
 ui <- navbarPage(
-  
+  tags$head(includeHTML(("google-analytics.html"))),
   theme = shinytheme("simplex"),
   title = img(src = "flag.png", width = 70),
   windowTitle = "COVID-19 Mexico",
