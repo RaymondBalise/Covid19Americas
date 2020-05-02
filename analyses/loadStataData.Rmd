@@ -1,6 +1,6 @@
 ---
 title: "Load STATA"
-author: "Raymond R. Balise"
+author: "Raymond R. Balise & Layla Bouzoubaa"
 date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2:

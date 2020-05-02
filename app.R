@@ -3,9 +3,10 @@
 source("global.R")
 
 ui <- navbarPage(
-  tags$head(includeHTML(("google-analytics.html"))),
+  
   theme = shinytheme("simplex"),
   title = img(src = "flag.png", width = 70),
+  header = tags$head(includeHTML(("google-analytics.html"))),
   windowTitle = "COVID-19 Mexico",
   # ++++++++++++++++++++++
   # TAB 1 : HOME PAGE ----
@@ -245,7 +246,7 @@ ui <- navbarPage(
     h4("Mapa"),
     h2("Mapa del índice de políticas ajustado por tiempo y movilidad"),
     br(),
-    radioButtons(inputId = "week", label = "Seleccione un estado:",
+    radioButtons(inputId = "week", label = "Seleccione una semana:",
                  choices = c("2020-03-09" = "2020-03-09",
                              "2020-03-16" = "2020-03-16",
                              "2020-03-23" = "2020-03-23",
@@ -424,7 +425,50 @@ cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las 
              )
       )
     ) #end hector
-  )
+  ),
+  # ++++++++++++++++++++++
+  # TAB 1 : DOWNLOADS ----
+  # ++++++++++++++++++++++
+  tabPanel(title = h4("Documentación"),
+           br(),
+           fluidRow(
+             column(width = 6,
+                    align = "center",
+                    fluidRow(
+                      img(src = "slideshow.png",
+                          width = 550,
+                          height = 400)
+                    ),
+                    br(),
+                    fluidRow(
+                      tags$a(href = 'slideshow.pdf', 
+                             class = "btn", 
+                             icon("download"), 
+                             'haga click aquí para descargar',
+                             style = "margin: auto; width: 550px;color: green;
+                             font-size:18px")
+                    
+                    )
+                    ),
+             column(width = 6,
+                    align = "center",
+                    fluidRow(
+                      img(src = "press_release.png",
+                          width = 650,
+                          height = 400)
+                    ),
+                    br(),
+                    fluidRow(
+                      tags$a(href = 'press_release.pdf', 
+                             class = "btn", 
+                             icon("download"), 
+                             'haga click aquí para descargar',
+                             style = "margin: auto; width: 650px;color: green;
+                             font-size:18px")
+                    )
+             )
+           )
+           )
 )
 
 server <- function(input, output, session) {
