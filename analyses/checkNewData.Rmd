@@ -1,0 +1,139 @@
+---
+title: "Check on 29th data"
+author: "Raymond R Balise"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    df_print: kable
+    number_sections: false
+    toc: true
+    config:
+      toc:
+        collapse: 2
+    toc_depth: 4
+    toc_float: true
+    
+    theme: default
+    highlight: tango 
+---
+
+```{r setup}
+library(conflicted)
+suppressMessages(conflict_prefer("filter", "dplyr"))
+suppressPackageStartupMessages(library(tidyverse))
+
+library(haven)
+library(compareDF)
+```
+
+```{r}
+
+
+oldFile  <- "covid-19 abril 27.dta"
+newFile <- "covid-19 mayo 01 v2.dta"
+
+  old <- read_stata(paste0("../data/", oldFile), encoding = "latin1")
+  new <- read_stata(paste0("../data/", newFile), encoding = "latin1")
+```
+  
+# Variables with diffeent names
+```{r}
+# https://bookdown.org/Maxine/r4ds/comparing-two-data-frames-tibbles.html
+  dplyr::all_equal(old, new)
+```
+  
+## Fixing names of variables  
+```{r fixNames}  
+newRenamed <- new %>% 
+  rename(`Icu_beds` = `Icubeds`)
+```
+
+# Check variable attributes
+```{r checkAttributes}
+  dplyr::all_equal(old, newRenamed)
+```
+
+## Details on attribute discrepancies
+Variable names/labels have changed and the numeric percision has changed.
+
+```{r attributeDifs}
+
+  checkAttrs <- function(oldVar, newVar) {
+    cat(paste0("Old: ", as.list(match.call(expand.dots=FALSE)))[[2]], "\n")
+    cat("Attributes:\n")
+    print(attributes(oldVar))
+    #print(x)
+    cat("\n")
+    
+    cat(paste0("New: ", as.list(match.call(expand.dots=FALSE)))[[3]], "\n")
+    cat("Attributes:\n")
+    x <- attributes(newVar)
+    print(x)
+    cat("\n")
+    }
+  
+  checkAttrs(old$Hospital_Beds, newRenamed$Hospital_Beds)
+  checkAttrs(old$Hospital_Beds_Per_Capita, newRenamed$Hospital_Beds_Per_Capita)
+  checkAttrs(old$Icu_beds, newRenamed$Icu_beds)
+  checkAttrs(old$Icubeds_Per_Capita, newRenamed$Icubeds_Per_Capita)
+  checkAttrs(old$Population, newRenamed$Population)
+  checkAttrs(old$GDP_Rank, newRenamed$GDP_Rank)
+  checkAttrs(old$Marginalization_Rank, newRenamed$Marginalization_Rank)
+  checkAttrs(old$cases_per_capita, newRenamed$cases_per_capita)
+  checkAttrs(old$deaths_per_capita, newRenamed$deaths_per_capita)
+  checkAttrs(old$deaths_per_cuci, newRenamed$deaths_per_cuci)
+  checkAttrs(old$pop2, newRenamed$pop2)
+  checkAttrs(old$rank_daily, newRenamed$rank_daily)
+  
+```
+
+## Erase attributes and check again
+```{r}
+old[] <- lapply(old, function(x) { attributes(x) <- NULL; x })
+newRenamed[] <- lapply(newRenamed, function(x) { attributes(x) <- NULL; x })
+
+dplyr::all_equal(old, newRenamed)
+```
+
+# Subset the new data to have only the old dates (same number of rows)
+```{r}
+oldDays <- max(old$Days)
+
+oldShouldMatch <- old %>%  
+    arrange(State_Code, Days ) %>% 
+    mutate(StateNameDays = paste0(State_Name, "~", Days))
+
+newShouldMatch <- newRenamed %>% 
+  filter(Days <= oldDays) %>% 
+  arrange(State_Code, Days ) %>% 
+  mutate(StateNameDays = paste0(State_Name, "~", Days))
+
+#theDiffs <- dplyr::all_equal(oldShouldMatch, newShouldMatch)
+
+```
+
+# Identify the first 100 different records
+```{r varDiffs}
+varDiffs <- compareDF::compare_df(oldShouldMatch, newShouldMatch, c("StateNameDays"))
+create_output_table(varDiffs, limit = 100)
+```
+
+The population estimates are now more percise.
+
+# Identify first 1000 differences ignoring population 
+There are many additional changes to the old data.
+
+```{r varDiffsWithoutPop}
+cutOldShouldMatch <- 
+  oldShouldMatch %>% 
+  select(-Population)
+
+cutNewShouldMatch <- 
+  newShouldMatch %>% 
+  select(-Population)
+
+cutVarDiffs <- compareDF::compare_df(cutOldShouldMatch, cutNewShouldMatch, c("StateNameDays"))
+create_output_table(cutVarDiffs, limit = 1000)
+```
+
+
