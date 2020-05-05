@@ -18,7 +18,7 @@ mexico <- read_rds("./data/analysis.rds")
 
 mexico_states <- read_rds("./geo/mexico_states.rds") 
 mexico_states <- sf::st_as_sf(mexico_states) %>% 
-  mutate(ADMIN_NAME = case_when(ADMIN_NAME == "Mexico" ~ "Mex",
+  mutate(ADMIN_NAME = case_when(ADMIN_NAME == "Mexico" ~ "Estado de Mexico",
                                 ADMIN_NAME =="Distrito Federal" ~ "Ciudad de Mexico",
                                 TRUE ~ as.character(ADMIN_NAME)))
 
