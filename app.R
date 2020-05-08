@@ -488,7 +488,10 @@ server <- function(input, output, session) {
   # Summary plots / Index ----
   
   output$summaryIndexPlot <- renderPlotly({
-    gg <- ggplot(data = mexico) + 
+    gg <-
+      mexico %>% 
+      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`, 1)) %>% 
+      ggplot() + 
       #ggtitle("Policy Index Adjusted for Time and Mobility") +
       geom_line(data = refIndexTimeMob, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Smallest), color = "gray") +
@@ -523,7 +526,7 @@ server <- function(input, output, session) {
   
   output$index_table <- renderDataTable({
     mexico_latest %>% 
-      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`,1)) %>% 
+      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`, 1)) %>% 
       select(`State Name`, `Policy Index Adj Time Mobility`) %>% 
       rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%    
       rename(Estado = `State Name`) %>% 
@@ -534,7 +537,10 @@ server <- function(input, output, session) {
   # Summary plots / DeathPerCapita ----
   
   output$summaryDeathsPerCapitaPlot <- renderPlotly({
-    gg <- ggplot(data = mexico) + 
+    gg <- 
+      mexico %>% 
+      mutate(`Deaths per capita * 1000000` = round(`Deaths per capita` * 1000000, 1)) %>% 
+      ggplot() + 
       #ggtitle("Deaths per capita") +
       geom_line(data = refDeathPerCapita, aes(x=`Days Since the First Case (in Mexico)`, 
                                             y = Smallest * 1000000), color = "gray") +
@@ -549,7 +555,7 @@ server <- function(input, output, session) {
             legend.background = element_rect(fill = "transparent"), # get rid of legend bg
             legend.box.background = element_rect(fill = "transparent")) +
       geom_point(aes(x=`Days Since the First Case (in Mexico)`, 
-                     y = `Deaths per capita` * 1000000, 
+                     y = `Deaths per capita * 1000000`, 
                      group = `State Name`,
                      color = `State Name`,
                      shape = 21),
@@ -567,9 +573,9 @@ server <- function(input, output, session) {
     select(Date, `State Name`, `Deaths per capita`) %>% 
     group_by(`State Name`) %>%
     slice(which.max(as.Date(Date, '%Y-%m-%d'))) %>% 
-    mutate(`Deaths per capita` = round(`Deaths per capita` * 1000000, .01)) %>% 
-      select(`State Name`, `Deaths per capita`) %>% 
-      rename(`Muertes per capita * 1,000,000` = `Deaths per capita`) %>%    
+    mutate(`Deaths per capita * 1000000` = round(`Deaths per capita` * 1000000, 1))  %>% 
+      select(`State Name`, `Deaths per capita * 1000000`) %>% 
+      rename(`Muertes per capita * 1,000,000` = `Deaths per capita * 1000000`) %>%    
       rename(Estado = `State Name`) %>% 
       datatable(.,
                 rownames = FALSE)
