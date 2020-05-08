@@ -144,7 +144,7 @@ ui <- navbarPage(
                  min = 1, max = 65,
                  value = 1, step = 1,
                  animate =
-                   animationOptions(interval = 300, loop = TRUE)))),
+                   animationOptions(interval = 300, loop = FALSE)))),
     
     fluidRow(
       column(
