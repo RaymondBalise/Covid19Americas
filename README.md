@@ -4,15 +4,15 @@ This is the code that creates: http://www.obscontencovid.info/.
 
 ## How we built the site?
 The entire site was built in R using:
-+ shiny
++ shiny with
     + shinythemes
     + shinydashboard
-+ tidyverse
++ tidyverse with
     + conflicted
     + ggthemes
 + plotly
 + leaflet
-+ sp
+    + sp
 + DT
 
 ## Where we are and what is next?
