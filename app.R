@@ -245,11 +245,16 @@ ui <- navbarPage(
     fluidRow(
       column(
         offset = 1,
-        width = 5,
+        width = 10,
         plotlyOutput("indexAdjTimeMobilityPlot")
-      ),
-      column(width = 5, plotlyOutput("mobilityPlot"))
-    )
+      )),    
+    fluidRow(
+      column(
+        offset = 1,
+        width = 10,
+        plotlyOutput("mobilityPlot")
+      ))
+    
     
   ),
   # ++++++++++++++++++++++
@@ -550,7 +555,7 @@ cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las 
     br(),
     hr(),
     br(),    
-
+    
     fluidRow(column(
       offset = 1,
       width = 10,
@@ -594,7 +599,7 @@ cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las 
     #end hector
     
     
-   
+    
   ),
   # ++++++++++++++++++++++
   # TAB 1 : DOWNLOADS ----
