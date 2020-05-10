@@ -116,6 +116,10 @@ ui <- navbarPage(
     fluidRow(h1(
       strong("Resumen"), align = "center", style = "color: black"
     )),
+    h4(
+      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      align = "center"
+    ),
     fluidRow(h4(
       strong(
         "Haga doble clic en el nombre de un estado en la leyenda para mostrarlo solo. Haga doble clic nuevamente para mostrar toda la información."
@@ -195,7 +199,7 @@ ui <- navbarPage(
       align = "center"
     )),
     
-    p(
+    h4(
       "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
       align = "center"
     )
