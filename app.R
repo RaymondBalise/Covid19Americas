@@ -196,7 +196,7 @@ ui <- navbarPage(
     )),
     
     p(
-      "Estos datos se actualizaron por última vez el 23 de abril de 2020.",
+      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
       align = "center"
     )
     
