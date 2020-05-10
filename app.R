@@ -217,7 +217,10 @@ ui <- navbarPage(
       align = "center",
       style = "color: black"
     )),
-    
+    h4(
+      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      align = "center"
+    ),
     fluidRow(h4(
       strong(
         "Las líneas grises muestran el valor mínimo y máximo que se obtuvo en todos los estados por día."
