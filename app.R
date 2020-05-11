@@ -610,48 +610,86 @@ cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las 
              column(
                width = 6,
                align = "center",
-               fluidRow(img(
-                 src = "slideshow.png",
-                 width = 550,
-                 height = 400
-               )),
-               br(),
                fluidRow(
-                 tags$a(
-                   href = 'slideshow.pdf',
-                   class = "btn",
-                   icon("download"),
-                   'haga click aquí para descargar',
-                   style = "margin: auto; width: 550px;color: green;
-                             font-size:18px"
-                 )
-                 
-               )
+                 selectInput(inputId = "slide",
+                             label = "Seleccione una versión:",
+                             choices = c("29 Abril" = "april",
+                                         "03 Mayo" = "may"),
+                             selected = "may")
+               ),
+               br(),
+               br(),
+               uiOutput("slide_png"),
+               br(),
+               uiOutput("slide_pdf")
              ),
              column(
                width = 6,
                align = "center",
-               fluidRow(img(
-                 src = "press_release.png",
-                 width = 650,
-                 height = 400
-               )),
-               br(),
                fluidRow(
-                 tags$a(
-                   href = 'press_release.pdf',
-                   class = "btn",
-                   icon("download"),
-                   'haga click aquí para descargar',
-                   style = "margin: auto; width: 650px;color: green;
-                             font-size:18px"
-                 )
-               )
+                 selectInput(inputId = "pr",
+                             label = "Seleccione una versión:",
+                             choices = c("29 Abril" = "april",
+                                         "03 Mayo" = "may"),
+                             selected = "may")
+               ),
+               br(),
+               br(),
+               uiOutput("pr_png"),
+               br(),
+               uiOutput("pr_pdf")
              )
            ))
 )
 
 server <- function(input, output, session) {
+  #documentation
+  output$slide_png <- renderUI({
+    
+    fluidRow(img(
+      src = paste0("slideshow_", input$slide,".png"),
+      width = 550,
+      height = 400
+    )
+    )
+    
+  })
+  
+  output$slide_pdf <- renderUI({
+    
+    fluidRow(
+      tags$a(
+        href = paste0('slideshow_',input$slide,'.pdf'),
+        class = "btn",
+        icon("download"),
+        'haga click aquí para descargar',
+        style = "margin: auto; width: 550px;color: green;
+                             font-size:18px"
+      )
+      
+    )
+  })
+  
+  output$pr_png <- renderUI({
+    fluidRow(img(
+      src = paste0("press_release_", input$pr,".png"),
+      width = 650,
+      height = 400
+    ))
+  })
+  
+  output$pr_pdf <- renderUI({
+    fluidRow(
+      tags$a(
+        href = paste0("press_release_", input$pr, ".pdf"),
+        class = "btn",
+        icon("download"),
+        'haga click aquí para descargar',
+        style = "margin: auto; width: 650px;color: green;
+                             font-size:18px"
+      )
+    )
+  })
   # Summary plots / Index ----
   
   output$summaryIndexPlot <- renderPlotly({
