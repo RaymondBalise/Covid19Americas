@@ -148,9 +148,9 @@ ui <- navbarPage(
         ),
         height = "500px",
         tabPanel("Gráfico", width = 12,
-                 plotlyOutput("summaryIndexPlot")),
-        tabPanel("Tabla de datos", width = 12,
-                 dataTableOutput("index_table"))
+                 plotlyOutput("summaryIndexPlot")) #,
+        #tabPanel("Tabla de datos", width = 12,
+        #         dataTableOutput("index_table"))
       )
     )),
     fluidRow(column(
@@ -162,9 +162,9 @@ ui <- navbarPage(
         title = h3("Muertes per cápita", align = "center"),
         height = "500px",
         tabPanel("Gráfico",
-                 plotlyOutput("summaryDeathsPerCapitaPlot")),
-        tabPanel("Tabla de datos",
-                 dataTableOutput("death_table"))
+                 plotlyOutput("summaryDeathsPerCapitaPlot")) #,
+        #tabPanel("Tabla de datos",
+                 #dataTableOutput("death_table"))
       )
     )),
     br(),
