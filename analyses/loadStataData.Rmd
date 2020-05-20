@@ -44,12 +44,13 @@ analysis <- read_stata("../data/covid-19 mayo 01 v2.dta", encoding = "latin1") %
   rename(`Mobility Index` = Mobility_Index) %>% 
   rename(`Icu_beds` = `Icubeds`) %>% 
   mutate(State_Name = stri_encode(State_Name, "latin1", "UTF-8")) %>% # accents
-  mutate(`State Name` = case_when(State_Name == "MichoacÂn" ~ "Michoacan",
-                                State_Name == "Nuevo LeÂn" ~ "Nuevo Leon",
-                                State_Name == "QuerÂtaro" ~"Queretaro",
-                                State_Name == "San Luis PotosÂ" ~ "San Luis Potosi",
-                                State_Name == "YucatÂn" ~ "Yucatan",
-                                State_Name == "Mex" ~ "Estado de Mexico",
+  mutate(`State Name` = case_when(State_Name == "MichoacÂn" ~ "Michoacán",
+                                State_Name == "Nuevo LeÂn" ~ "Nuevo León",
+                                State_Name == "QuerÂtaro" ~"Querétaro",
+                                State_Name == "San Luis PotosÂ" ~ "San Luis Potosí",
+                                State_Name == "YucatÂn" ~ "Yucatán",
+                                State_Name == "Mex" ~ "Estado de México",
+                                State_Name == "Ciudad de Mexico" ~ "Ciudad de México",
                                 TRUE ~ State_Name))
 
 write_rds(analysis, "../data/analysis.rds")

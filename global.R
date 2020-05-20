@@ -18,8 +18,13 @@ mexico <- read_rds("./data/analysis.rds")
 
 mexico_states <- read_rds("./geo/mexico_states.rds") 
 mexico_states <- sf::st_as_sf(mexico_states) %>% 
-  mutate(ADMIN_NAME = case_when(ADMIN_NAME == "Mexico" ~ "Estado de Mexico",
-                                ADMIN_NAME =="Distrito Federal" ~ "Ciudad de Mexico",
+  mutate(ADMIN_NAME = case_when(ADMIN_NAME == "Mexico" ~ "Estado de México",
+                                ADMIN_NAME =="Distrito Federal" ~ "Ciudad de México",
+                                ADMIN_NAME == "Michoacan" ~ "Michoacán",
+                                ADMIN_NAME == "Nuevo Leon" ~ "Nuevo León",
+                                ADMIN_NAME == "Queretaro" ~ "Querétaro",
+                                ADMIN_NAME == "San Luis Potosi" ~ "San Luis Potosí",
+                                ADMIN_NAME == "Yucatan" ~ "Yucatán",
                                 TRUE ~ as.character(ADMIN_NAME)))
 
 stateNames <- mexico %>% 

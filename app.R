@@ -46,17 +46,25 @@ ui <- navbarPage(
         div(
           img(src = "mia.png", width = 400, class = "img"),
           img(
+            src = "Com_Logo.png",
+            width = 400,
+            height = 140,
+            class = "img"
+            ),
+          img(
             src = "arts.png",
             width = 375,
             height = 170,
             class = "img"
           ),
+
           img(
             src = "dphs.png",
             width = 400,
             height = 140,
             class = "img"
           )
+
         ),
         br(),
         h4(strong("en colaboración con:")),
@@ -334,7 +342,7 @@ ui <- navbarPage(
         label = "Seleccione una semana:",
         min = lubridate::ymd("2020-03-09"),
         max = lubridate::ymd("2020-05-01"),
-        value = lubridate::ymd("2020-03-09"),
+        value = lubridate::ymd("2020-05-01"),
         step = NULL,
         ticks = TRUE,
         width = '1000px',
@@ -363,11 +371,13 @@ ui <- navbarPage(
       offset = 1,
       align = "left",
       p(
-        'El Observatorio Estatal para la Contención del COVID-19 (ObsContenCOVID)
-    es una plataforma que presenta información sistemática y actualizada día con día sobre las
-    medidas que los gobiernos estatales en México han adoptado para fomentar el distanciamiento social, reducir la movilidad e
-    informar a la población sobre la enfermedad. La herramienta incluye también información sobre el grado en que estas medidas
-    han sido observadas por los ciudadanos, con base en el movimiento registrado entre la población.',
+        'El Observatorio Estatal para la Contención del COVID-19 (ObsContenCOVID) 
+        es una plataforma que presenta información sistemática y actualizada día 
+        con día sobre las medidas que los gobiernos estatales en México han adoptado 
+        para fomentar el distanciamiento social, reducir la movilidad e informar a 
+        la población sobre la enfermedad. La herramienta incluye también información 
+        sobre el grado en que estas medidas han sido observadas por los ciudadanos, 
+        con base en el movimiento registrado entre la población.',
         style = "font-size:150%"
       ),
       p(
@@ -375,54 +385,61 @@ ui <- navbarPage(
         tags$i('EL Oxford COVID-19 Government Response Tracker'),
         '(OxCGRT),
 una herramienta desarrollada por la Universidad Oxford que consiste en un listado de medidas al alcance de los gobiernos para disminuir la
-velocidad de transmisión del virus [5].  Utilizamos el  OxCGRT para identificar las siete medidas preventivas relevantes a la situación de México: el cierre de escuelas;
-la suspensión de actividades laborales presenciales; la cancelación de eventos públicos; la suspensión del transporte público; el desarrollo de campañas
-informativas; la restricción de viajes y viajeros dentro del estado; y el control de viajes y viajeros internacionales.   OxCGRT califica estas medidas en una
-forma ordinal y presenta una suma simple de ellas a través del tiempo, generando así un índice.',
+velocidad de transmisión del virus.  Utilizamos el OxCGRT para identificar las siete 
+        medidas preventivas relevantes a la situación de México: el cierre de escuelas; 
+        la suspensión de actividades laborales presenciales; la cancelación de eventos públicos; 
+        la suspensión del transporte público; el desarrollo de campañas informativas; la restricción 
+        de viajes y viajeros dentro del estado; y el control de viajes y viajeros internacionales. 
+        OxCGRT califica estas medidas en una forma ordinal y presenta una suma simple de ellas a 
+        través del tiempo, generando así un índice. ',
         style = "font-size:150%"
       ),
-      p(
-        'ObsContenCOVID parte del marco OxCGRT y codifica la respuesta de los gobiernos estatales en México, con base en la información disponible en las páginas
-oficiales de cada una de las entidades federativas (Ver Anexo metodológico). Para cada estado, cada una de las siete políticas públicas mencionadas es medida
-en forma diaria, a partir de la fecha de aparición del primer caso oficialmente reconocido en el país (el 27 de febrero).
-La variables incluidas son: i) Cierre de escuelas, ii) Suspensión en área laboral, iii) Cancelación eventos públicos, iv) Suspensión transporte público,
-v) Desarrollo de Campañas informativas, vi) Restricción de viajes dentro del estado, y vii) Control de viajes internacionales.
-De manera similar a la metodología de OxCGRT, cada medida preventiva es calificada con una escala ordinal entre 0 y 1, en donde “0” implica que no existe registro
-de la aplicación de dicha medida en el estado, “0.5” registro parcial y/o no obligatoria y “1” que dicha política se implementó de manera total y
-obligatoria en la entidad. Cabe señalar que cada dato pasa por tres revisiones independientes, antes de ser agregado a la base de datos. De tal manera,
-cada estado recibe una calificación entre 0 y 7, que resulta de la suma de las distintas dimensiones y se actualiza diariamente, conforme cambian las medidas adoptadas.',
+      p('ObsContenCOVID parte del marco OxCGRT y codifica la respuesta de los gobiernos estatales en México, 
+        con base en la información disponible en las páginas oficiales de cada una de las entidades 
+        federativas (Ver Anexo metodológico). Para cada estado, cada una de las siete políticas públicas 
+        mencionadas es medida en forma diaria, a partir de la fecha de aparición del primer caso oficialmente 
+        reconocido en el país (el 27 de febrero). La variables incluidas son: i) Cierre de escuelas, 
+        ii) Suspensión en área laboral, iii) Cancelación eventos públicos, iv) Suspensión transporte público, 
+        v) Desarrollo de Campañas informativas, vi) Restricción de viajes dentro del estado, y 
+        vii) Control de viajes internacionales. De manera similar a la metodología de OxCGRT, 
+        cada medida preventiva es calificada con una escala ordinal entre 0 y 1, en donde “0” implica 
+        que no existe registro de la aplicación de dicha medida en el estado, “0.5” registro parcial y/o no 
+        obligatoria y “1” que dicha política se implementó de manera total y obligatoria en la entidad. 
+        Cabe señalar que cada dato pasa por tres revisiones independientes, antes de ser agregado a la 
+        base de datos. De tal manera, cada estado recibe una calificación entre 0 y 7, que resulta de la 
+        suma de las distintas dimensiones y se actualiza diariamente, conforme cambian las medidas adoptadas.',
         style = "font-size:150%"
       ),
       
-      p(
-        'Como segundo paso, ObsContenCOVID retoma el índice agregado para cada estado y lo pondera con base en la fecha de entrada en
-      vigor de cada una de las medidas en la entidad respectiva, nuevamente tomando como base el 27 de febrero, fecha del primer caso registrado.
-      Se presentan dos formas de ponderar a través del tiempo: una que aplica un peso uniforme por día, y otra que da un mayor peso a los días más cercanos
-      al 27 de febrero. Esta estrategia permite ajustar el índice estatal para que refleje no sólo la cantidad y rigor de las medidas adoptadas, sino
-      su adopción a tiempo. Uno de los hallazgos importantes de este ejercicio es que el ritmo de implementación de medidas preventivas ha variado
-      de manera considerable en el país, lo cual puede tener implicaciones importantes en el ritmo e intensidad de propagación de la enfermedad.',
+      p('Como segundo paso, ObsContenCOVID retoma el índice agregado para cada estado y lo pondera con base 
+        en la fecha de entrada en vigor de cada una de las medidas en la entidad respectiva, nuevamente tomando 
+        como base el 27 de febrero, fecha del primer caso registrado. Se presentan dos formas de ponderar a 
+        través del tiempo: una que aplica un peso uniforme por día, y otra que da un mayor peso a los días 
+        más cercanos al 27 de febrero. Esta estrategia permite ajustar el índice estatal para que refleje 
+        no sólo la cantidad y rigor de las medidas adoptadas, sino su adopción a tiempo. Uno de los hallazgos 
+        importantes de este ejercicio es que el ritmo de implementación de medidas preventivas ha variado de 
+        manera considerable en el país, lo cual puede tener implicaciones importantes en el ritmo e intensidad 
+        de propagación de la enfermedad.',
         style = "font-size:150%"
       ),
-      p(
-        'Finalmente, como tercer y último paso el índice compuesto es ponderado y ajustado con base en el éxito de las medidas en la contención de
-      la movilidad poblacional en la entidad federativa utilizando información de Retargetly Meta-data Movilidad México GPS Mobile App
-      sobre la reducción efectiva de la movilidad en cada uno de los estados, relativo a la movilidad convencional observada tres semanas previo
-      al inicio de la contingencia.[2] Esta ponderación es crucial para capturar la eficacia de las políticas públicas.',
+      p('Finalmente, como tercer y último paso el índice compuesto es ponderado y ajustado con base en el 
+        éxito de las medidas en la contención de la movilidad poblacional en la entidad federativa utilizando 
+        información de Retargetly Meta-data Movilidad México GPS Mobile App sobre la reducción efectiva de la 
+        movilidad en cada uno de los estados, relativo a la movilidad convencional observada tres semanas previo 
+        al inicio de la contingencia. Esta ponderación es crucial para capturar la eficacia de las políticas públicas.',
         style = "font-size:150%"
       ),
-      p(
-        'En resumen, el índice estatal del ObcContenCOVID es un retrato diario, para todas y cada una de las entidades federativas,
-      de: 1) la amplitud de las medidas adoptadas por los gobiernos estatales conforme a recomendaciones internacionales;
-      2) la oportunidad en su adopción; y 3) la respuesta poblacional, en términos de reducción de la movilidad.
-      Es basado en este índice, que toma valores de 0 a 1003 y puede ser interpretado como un porcentaje,
-      que se hace un ranqueo de las entidades federativas.',
+      p('En resumen, el índice estatal del ObcContenCOVID es un retrato diario, para todas y cada una de las entidades 
+        federativas, de: 1) la amplitud de las medidas adoptadas por los gobiernos estatales conforme a recomendaciones 
+        internacionales; 2) la oportunidad en su adopción; y 3) la respuesta poblacional, en términos de reducción de 
+        la movilidad. Es basado en este índice, que toma valores de 0 a 100 y puede ser interpretado como un porcentaje, 
+        que se hace un ranqueo de las entidades federativas.',
         style = "font-size:150%"
       ),
-      p(
-        'Con ello ofrecemos una herramienta valiosa para revisar no sólo lo hecho hasta aquí, sino también lo que se está
-      haciendo ahora mismo, en este momento crítico, para la contención de la epidemia. Nuestro objetivo al ponerlo al
-      alcance del público y sobre todo de las autoridades estatales es proveer información oportuna, que contribuya a tomar
-      mejores decisiones hacia el futuro. ',
+      p('Con ello ofrecemos una herramienta valiosa para revisar no sólo lo hecho hasta aquí, sino 
+        también lo que se está haciendo ahora mismo, en este momento crítico, para la contención de la 
+        epidemia. Nuestro objetivo al ponerlo al alcance del público y sobre todo de las autoridades estatales 
+        es proveer información oportuna, que contribuya a tomar mejores decisiones hacia el futuro.',
         style = "font-size:150%"
       ),
       br(),
