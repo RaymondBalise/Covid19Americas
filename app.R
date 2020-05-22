@@ -989,7 +989,7 @@ server <- function(input, output, session) {
   output$mobilityPlot <- renderPlotly({
     place <- mexico %>%
       filter(`State Name` == input$refPlace) %>%
-      filter(!is.na(`Mobility Index`))
+      filter(!is.na(`Policy Index Adjusted for Time`))
     
     gg <- ggplot() +
       ggtitle("Movilidad") +
