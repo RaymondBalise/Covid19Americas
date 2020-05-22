@@ -230,7 +230,7 @@ ui <- navbarPage(
     )),
     
     h4(
-      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      "Estos datos se actualizaron por última vez el 15 de mayo de 2020.",
       align = "center"
     )
     
@@ -248,7 +248,7 @@ ui <- navbarPage(
       style = "color: black"
     )),
     h4(
-      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      "Estos datos se actualizaron por última vez el 15 de mayo de 2020.",
       align = "center"
     ),
     fluidRow(h4(
