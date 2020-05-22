@@ -215,7 +215,7 @@ ui <- navbarPage(
         "spider",
         h4(strong(tags$i("elige un día:"))),
         min = 1,
-        max = 65,
+        max = latest,
         value = 1,
         step = 1,
         animate =
