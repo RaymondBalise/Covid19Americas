@@ -42,7 +42,7 @@ makeLimits <- function(data, x, grouping) {
 }
 
 refIndexTimeMob <- makeLimits(mexico, 
-                              `Policy Index Adj Time Mobility`, 
+                              `Policy Index Adjusted for Time`, 
                               `Days Since the First Case (in Mexico)`)
 
 

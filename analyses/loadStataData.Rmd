@@ -33,12 +33,12 @@ Data from Touchton, Michael <miketouchton@miami.edu> Tuesday, April 28, 2020 at 
 ## Notes:
 
 ```{r}
-analysis <- read_stata("../data/covid-19 mayo 01 v2.dta", encoding = "latin1") %>% 
+analysis <- read_stata("../data/Covid-19 mayo 15 (clean).dta", encoding = "latin1") %>% 
   rename(`Days Since the First Case (in Mexico)`  = Days) %>% 
   rename(`Total Cases`  = Total_Cases) %>% 
   rename(`Policy Index Adjusted for Time` = Policy_Index_Adjusted_Time) %>% 
   #rename(`Deaths/ICU Bed` = Deaths_per_ICUbed) %>% 
-  rename(`Policy Index Adj Time Mobility` = Policy_Index_Adj_Time_Mobility) %>% 
+  #rename(`Policy Index Adj Time Mobility` = Policy_Index_Adj_Time_Mobility) %>% 
   rename(`Cases per capita` = cases_per_capita) %>% 
   rename(`Deaths per capita` = deaths_per_capita) %>%
   rename(`Mobility Index` = Mobility_Index) %>% 
