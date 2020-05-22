@@ -41,7 +41,7 @@ makeLimits <- function(data, x, grouping) {
               Largest = max({{x}}, na.rm=TRUE))
 }
 
-refIndexTimeMob <- makeLimits(mexico, 
+refIndexTime <- makeLimits(mexico, 
                               `Policy Index Adjusted for Time`, 
                               `Days Since the First Case (in Mexico)`)
 

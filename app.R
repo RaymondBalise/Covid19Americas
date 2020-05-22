@@ -125,7 +125,7 @@ ui <- navbarPage(
       strong("Resumen"), align = "center", style = "color: black"
     )),
     h4(
-      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      "Estos datos se actualizaron por última vez el 15 de mayo de 2020.",
       align = "center"
     ),
     fluidRow(h4(
@@ -161,6 +161,28 @@ ui <- navbarPage(
         #         dataTableOutput("index_table"))
       )
     )),
+    
+    
+    fluidRow(column(
+      offset = 1,
+      width = 10,
+      tabBox(
+        id = "index",
+        width = 12,
+        title = h3(
+          "Movilidad",
+          align = "center"
+        ),
+        height = "500px",
+        tabPanel("Gráfico", width = 12,
+                 plotlyOutput("summaryMobilityPlot")) #,
+        #tabPanel("Tabla de datos", width = 12,
+        #         dataTableOutput("index_table"))
+      )
+    )),
+    
+    
+    
     fluidRow(column(
       offset = 1,
       width = 10,
@@ -254,7 +276,7 @@ ui <- navbarPage(
       column(
         offset = 1,
         width = 10,
-        plotlyOutput("indexAdjTimeMobilityPlot")
+        plotlyOutput("indexAdjTimePlot")
       )),    
     fluidRow(
       column(
@@ -716,19 +738,19 @@ server <- function(input, output, session) {
       ggplot() +
       #ggtitle("Policy Index Adjusted for Time") +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime, # fix this name
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Smallest),
         color = "gray"
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Average),
         color = "black"
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Largest),
         color = "gray"
@@ -774,6 +796,78 @@ server <- function(input, output, session) {
       datatable(.,
                 rownames = FALSE)
   })
+  
+  # Summary plots / Mobility ----
+  
+  output$summaryMobilityPlot <- renderPlotly({
+    gg <-
+      mexico %>%
+      mutate(`Mobility Index` = round(`Mobility Index`, 1)) %>%
+      ggplot() +
+      #ggtitle("Mobility Index") +
+      geom_line(
+        data = refMobilityIndex, 
+        aes(x = `Days Since the First Case (in Mexico)`,
+            y = Smallest),
+        color = "gray"
+      ) +
+      geom_line(
+        data = refMobilityIndex,
+        aes(x = `Days Since the First Case (in Mexico)`,
+            y = Average),
+        color = "black"
+      ) +
+      geom_line(
+        data = refMobilityIndex,
+        aes(x = `Days Since the First Case (in Mexico)`,
+            y = Largest),
+        color = "gray"
+      ) +
+      theme_few(base_size = 20) +
+      theme(
+        legend.title = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        # bg of the panel
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background = element_rect(fill = "transparent"),
+        # get rid of legend bg
+        legend.box.background = element_rect(fill = "transparent")
+      ) +
+      geom_point(
+        aes(
+          x = `Days Since the First Case (in Mexico)`,
+          y = `Mobility Index`,
+          group = `State Name`,
+          color = `State Name`,
+          shape = 4,
+        ),
+        size = 2
+      ) +
+      scale_shape_identity() +
+      xlab("Días desde el primer caso en México") +
+      ylab("Movilidad")
+    
+    
+    ggplotly(gg, tooltip = c("x", "y", "group"))
+  })
+  
+  mexico_latest <- mexico %>%
+    group_by(`State Name`) %>%
+    slice(which.max(as.Date(Date, '%Y-%m-%d')))
+  
+  output$index_table <- renderDataTable({
+    mexico_latest %>%
+      mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
+      select(`State Name`, `Policy Index Adj Time`) %>%
+      rename(`Índice de política pública ajustado por tiempo` = `Policy Index Adj Time`) %>%
+      rename(Estado = `State Name`) %>%
+      datatable(.,
+                rownames = FALSE)
+  })
+  
+  
+  
+  
   
   # Summary plots / DeathPerCapita ----
   
@@ -846,7 +940,7 @@ server <- function(input, output, session) {
   
   # Single State Plot / Index ----
   
-  output$indexAdjTimeMobilityPlot <- renderPlotly({
+  output$indexAdjTimePlot <- renderPlotly({
     # should be reactive
     place <- mexico %>%
       filter(`State Name` == input$refPlace) %>%
@@ -865,14 +959,14 @@ server <- function(input, output, session) {
         legend.box.background = element_rect(fill = "transparent")
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Smallest),
         color = "gray",
         size = 1
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Largest),
         color = "gray",
@@ -889,40 +983,6 @@ server <- function(input, output, session) {
       ylab("Índice")  +
       xlab("Días desde el primer caso en México")
   })
-  
-  # Single State Plot / Death Per Capita Plot ----
-  #
-  # output$deathPerCapitaPlot <- renderPlotly({
-  #   place <- mexico %>%
-  #     filter(`State Name` == input$refPlace) %>%
-  #     filter(!is.na(`Policy Index Adj Time Mobility`))
-  #
-  #   gg <- ggplot() +
-  #     ggtitle("Deaths per Capita") +
-  #     theme_few(base_size = 25) +
-  #     theme(legend.title = element_blank()) +
-  #     geom_line(data = refDeathPerCapita,
-  #               aes(x=`Days Since the First Case (in Mexico)`,
-  #                   y = Smallest),
-  #               color = "gray",
-  #               size = 1) +
-  #     geom_line(data = refDeathPerCapita,
-  #               aes(x=`Days Since the First Case (in Mexico)`,
-  #                   y = Largest),
-  #               color = "gray",
-  #               size = 1)  +
-  #     geom_point(data = place,
-  #                aes(x=`Days Since the First Case (in Mexico)`,
-  #                    y = `Deaths per capita`),
-  #                color = "orange",
-  #                size = 2,
-  #                shape = 21) +
-  #     ylab("Deaths")
-  #
-  #   ggplotly(gg, tooltip=c("x", "y", "group"))
-  # })
-  
-  
   
   # Single State Plot / Mobility Plot ----
   
