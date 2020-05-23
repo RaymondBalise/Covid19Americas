@@ -216,7 +216,7 @@ ui <- navbarPage(
         h4(strong(tags$i("elige un día:"))),
         min = 1,
         max = latest,
-        value = 1,
+        value = latest,
         step = 1,
         animate =
           animationOptions(interval = 300, loop = FALSE)
@@ -363,8 +363,8 @@ ui <- navbarPage(
         inputId = "week",
         label = "Seleccione una semana:",
         min = lubridate::ymd("2020-03-09"),
-        max = lubridate::ymd("2020-05-01"),
-        value = lubridate::ymd("2020-05-01"),
+        max = lubridate::ymd("2020-05-15"),
+        value = lubridate::ymd("2020-05-15"),
         step = NULL,
         ticks = TRUE,
         width = '1000px',
@@ -669,8 +669,9 @@ velocidad de transmisión del virus.  Utilizamos el OxCGRT para identificar las 
                  selectInput(inputId = "pr",
                              label = "Seleccione una versión:",
                              choices = c("29 Abril" = "april",
-                                         "03 Mayo" = "may"),
-                             selected = "may")
+                                         "03 Mayo" = "may",
+                                         "15 Mayo" = "may2"),
+                             selected = "may2")
                ),
                br(),
                br(),
