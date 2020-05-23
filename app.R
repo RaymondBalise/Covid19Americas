@@ -125,7 +125,7 @@ ui <- navbarPage(
       strong("Resumen"), align = "center", style = "color: black"
     )),
     h4(
-      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      "Estos datos se actualizaron por última vez el 15 de mayo de 2020.",
       align = "center"
     ),
     fluidRow(h4(
@@ -151,7 +151,7 @@ ui <- navbarPage(
         id = "index",
         width = 12,
         title = h3(
-          "Índice de política pública ajustado por tiempo y movilidad",
+          "Índice de política pública ajustado por tiempo",
           align = "center"
         ),
         height = "500px",
@@ -161,6 +161,28 @@ ui <- navbarPage(
         #         dataTableOutput("index_table"))
       )
     )),
+    
+    
+    fluidRow(column(
+      offset = 1,
+      width = 10,
+      tabBox(
+        id = "index",
+        width = 12,
+        title = h3(
+          "Movilidad",
+          align = "center"
+        ),
+        height = "500px",
+        tabPanel("Gráfico", width = 12,
+                 plotlyOutput("summaryMobilityPlot")) #,
+        #tabPanel("Tabla de datos", width = 12,
+        #         dataTableOutput("index_table"))
+      )
+    )),
+    
+    
+    
     fluidRow(column(
       offset = 1,
       width = 10,
@@ -193,8 +215,8 @@ ui <- navbarPage(
         "spider",
         h4(strong(tags$i("elige un día:"))),
         min = 1,
-        max = 65,
-        value = 1,
+        max = latest,
+        value = latest,
         step = 1,
         animate =
           animationOptions(interval = 300, loop = FALSE)
@@ -208,7 +230,7 @@ ui <- navbarPage(
     )),
     
     h4(
-      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      "Estos datos se actualizaron por última vez el 15 de mayo de 2020.",
       align = "center"
     )
     
@@ -226,7 +248,7 @@ ui <- navbarPage(
       style = "color: black"
     )),
     h4(
-      "Estos datos se actualizaron por última vez el 01 de mayo de 2020.",
+      "Estos datos se actualizaron por última vez el 15 de mayo de 2020.",
       align = "center"
     ),
     fluidRow(h4(
@@ -254,7 +276,7 @@ ui <- navbarPage(
       column(
         offset = 1,
         width = 10,
-        plotlyOutput("indexAdjTimeMobilityPlot")
+        plotlyOutput("indexAdjTimePlot")
       )),    
     fluidRow(
       column(
@@ -321,7 +343,7 @@ ui <- navbarPage(
   
   tabPanel(
     h4("Mapa"),
-    h2("Mapa del índice de políticas ajustado por tiempo y movilidad"),
+    h2("Mapa del índice de políticas ajustado por tiempo"),
     br(),
     # radioButtons(inputId = "week", label = "Seleccione una semana:",
     #              choices = c("2020-03-09" = "2020-03-09",
@@ -341,8 +363,8 @@ ui <- navbarPage(
         inputId = "week",
         label = "Seleccione una semana:",
         min = lubridate::ymd("2020-03-09"),
-        max = lubridate::ymd("2020-05-01"),
-        value = lubridate::ymd("2020-05-01"),
+        max = lubridate::ymd("2020-05-15"),
+        value = lubridate::ymd("2020-05-15"),
         step = NULL,
         ticks = TRUE,
         width = '1000px',
@@ -647,8 +669,9 @@ velocidad de transmisión del virus.  Utilizamos el OxCGRT para identificar las 
                  selectInput(inputId = "pr",
                              label = "Seleccione una versión:",
                              choices = c("29 Abril" = "april",
-                                         "03 Mayo" = "may"),
-                             selected = "may")
+                                         "03 Mayo" = "may",
+                                         "15 Mayo" = "may2"),
+                             selected = "may2")
                ),
                br(),
                br(),
@@ -712,23 +735,23 @@ server <- function(input, output, session) {
   output$summaryIndexPlot <- renderPlotly({
     gg <-
       mexico %>%
-      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`, 1)) %>%
+      mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
       ggplot() +
-      #ggtitle("Policy Index Adjusted for Time and Mobility") +
+      #ggtitle("Policy Index Adjusted for Time") +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime, # fix this name
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Smallest),
         color = "gray"
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Average),
         color = "black"
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Largest),
         color = "gray"
@@ -746,7 +769,7 @@ server <- function(input, output, session) {
       geom_point(
         aes(
           x = `Days Since the First Case (in Mexico)`,
-          y = `Policy Index Adj Time Mobility`,
+          y = `Policy Index Adj Time`,
           group = `State Name`,
           color = `State Name`,
           shape = 4,
@@ -767,13 +790,85 @@ server <- function(input, output, session) {
   
   output$index_table <- renderDataTable({
     mexico_latest %>%
-      mutate(`Policy Index Adj Time Mobility` = round(`Policy Index Adj Time Mobility`, 1)) %>%
-      select(`State Name`, `Policy Index Adj Time Mobility`) %>%
-      rename(`Índice de política pública ajustado por tiempo y movilidad` = `Policy Index Adj Time Mobility`) %>%
+      mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
+      select(`State Name`, `Policy Index Adj Time`) %>%
+      rename(`Índice de política pública ajustado por tiempo` = `Policy Index Adj Time`) %>%
       rename(Estado = `State Name`) %>%
       datatable(.,
                 rownames = FALSE)
   })
+  
+  # Summary plots / Mobility ----
+  
+  output$summaryMobilityPlot <- renderPlotly({
+    gg <-
+      mexico %>%
+      mutate(`Mobility Index` = round(`Mobility Index`, 1)) %>%
+      ggplot() +
+      #ggtitle("Mobility Index") +
+      geom_line(
+        data = refMobilityIndex, 
+        aes(x = `Days Since the First Case (in Mexico)`,
+            y = Smallest),
+        color = "gray"
+      ) +
+      geom_line(
+        data = refMobilityIndex,
+        aes(x = `Days Since the First Case (in Mexico)`,
+            y = Average),
+        color = "black"
+      ) +
+      geom_line(
+        data = refMobilityIndex,
+        aes(x = `Days Since the First Case (in Mexico)`,
+            y = Largest),
+        color = "gray"
+      ) +
+      theme_few(base_size = 20) +
+      theme(
+        legend.title = element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        # bg of the panel
+        plot.background = element_rect(fill = "transparent", color = NA),
+        legend.background = element_rect(fill = "transparent"),
+        # get rid of legend bg
+        legend.box.background = element_rect(fill = "transparent")
+      ) +
+      geom_point(
+        aes(
+          x = `Days Since the First Case (in Mexico)`,
+          y = `Mobility Index`,
+          group = `State Name`,
+          color = `State Name`,
+          shape = 4,
+        ),
+        size = 2
+      ) +
+      scale_shape_identity() +
+      xlab("Días desde el primer caso en México") +
+      ylab("Movilidad")
+    
+    
+    ggplotly(gg, tooltip = c("x", "y", "group"))
+  })
+  
+  mexico_latest <- mexico %>%
+    group_by(`State Name`) %>%
+    slice(which.max(as.Date(Date, '%Y-%m-%d')))
+  
+  output$index_table <- renderDataTable({
+    mexico_latest %>%
+      mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
+      select(`State Name`, `Policy Index Adj Time`) %>%
+      rename(`Índice de política pública ajustado por tiempo` = `Policy Index Adj Time`) %>%
+      rename(Estado = `State Name`) %>%
+      datatable(.,
+                rownames = FALSE)
+  })
+  
+  
+  
+  
   
   # Summary plots / DeathPerCapita ----
   
@@ -846,14 +941,14 @@ server <- function(input, output, session) {
   
   # Single State Plot / Index ----
   
-  output$indexAdjTimeMobilityPlot <- renderPlotly({
+  output$indexAdjTimePlot <- renderPlotly({
     # should be reactive
     place <- mexico %>%
       filter(`State Name` == input$refPlace) %>%
-      filter(!is.na(`Policy Index Adj Time Mobility`))
+      filter(!is.na(`Policy Index Adjusted for Time`))
     
     ggplot() +
-      ggtitle("Índice de política pública ajustado por tiempo y movilidad") +
+      ggtitle("Índice de política pública ajustado por tiempo") +
       theme_few(base_size = 20) +
       theme(
         plot.title = element_text(size = 20),
@@ -865,14 +960,14 @@ server <- function(input, output, session) {
         legend.box.background = element_rect(fill = "transparent")
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Smallest),
         color = "gray",
         size = 1
       ) +
       geom_line(
-        data = refIndexTimeMob,
+        data = refIndexTime,
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Largest),
         color = "gray",
@@ -881,7 +976,7 @@ server <- function(input, output, session) {
       geom_point(
         data = place,
         aes(x = `Days Since the First Case (in Mexico)`,
-            y = `Policy Index Adj Time Mobility`),
+            y = `Policy Index Adjusted for Time`),
         color = "orange",
         size = 2,
         shape = 4
@@ -890,46 +985,12 @@ server <- function(input, output, session) {
       xlab("Días desde el primer caso en México")
   })
   
-  # Single State Plot / Death Per Capita Plot ----
-  #
-  # output$deathPerCapitaPlot <- renderPlotly({
-  #   place <- mexico %>%
-  #     filter(`State Name` == input$refPlace) %>%
-  #     filter(!is.na(`Policy Index Adj Time Mobility`))
-  #
-  #   gg <- ggplot() +
-  #     ggtitle("Deaths per Capita") +
-  #     theme_few(base_size = 25) +
-  #     theme(legend.title = element_blank()) +
-  #     geom_line(data = refDeathPerCapita,
-  #               aes(x=`Days Since the First Case (in Mexico)`,
-  #                   y = Smallest),
-  #               color = "gray",
-  #               size = 1) +
-  #     geom_line(data = refDeathPerCapita,
-  #               aes(x=`Days Since the First Case (in Mexico)`,
-  #                   y = Largest),
-  #               color = "gray",
-  #               size = 1)  +
-  #     geom_point(data = place,
-  #                aes(x=`Days Since the First Case (in Mexico)`,
-  #                    y = `Deaths per capita`),
-  #                color = "orange",
-  #                size = 2,
-  #                shape = 21) +
-  #     ylab("Deaths")
-  #
-  #   ggplotly(gg, tooltip=c("x", "y", "group"))
-  # })
-  
-  
-  
   # Single State Plot / Mobility Plot ----
   
   output$mobilityPlot <- renderPlotly({
     place <- mexico %>%
       filter(`State Name` == input$refPlace) %>%
-      filter(!is.na(`Mobility Index`))
+      filter(!is.na(`Policy Index Adjusted for Time`))
     
     gg <- ggplot() +
       ggtitle("Movilidad") +
@@ -1114,6 +1175,10 @@ server <- function(input, output, session) {
   
   
   output$map <- renderLeaflet({
+
+    # input <-NULL
+    # input$week <- "2020-05-01"
+    
     mexico_latest <- mexico %>%
       group_by(`State Name`) %>%
       filter(Date == input$week)
@@ -1124,23 +1189,23 @@ server <- function(input, output, session) {
     #
     mexico_states_covid <-
       left_join(mexico_states,
-                mexico_latest[c("State Name", "Policy Index Adj Time Mobility")],
+                mexico_latest[c("State Name", "Policy Index Adjusted for Time")],
                 by = c("ADMIN_NAME" = "State Name"))
     
     #bins <- c(0, 75, 150, 225, 300, 375, 450, 525, 600, Inf)
     pal <-
-      colorBin("BrBG", domain = mexico_latest$`Policy Index Adj Time Mobility`)
+      colorBin("BrBG", domain = mexico_latest$`Policy Index Adjusted for Time`)
     
     labels <- sprintf(
       "<strong>%s</strong><br/>%g índice de política",
       mexico_states_covid$ADMIN_NAME,
-      mexico_states_covid$`Policy Index Adj Time Mobility`
+      mexico_states_covid$`Policy Index Adjusted for Time`
     ) %>% lapply(htmltools::HTML)
     
     leaflet(data = mexico_states_covid) %>%
       addProviderTiles("Esri.WorldGrayCanvas") %>%
       addPolygons(
-        fillColor = ~ pal(`Policy Index Adj Time Mobility`),
+        fillColor = ~ pal(`Policy Index Adjusted for Time`),
         weight = 2,
         opacity = 1,
         color = "white",
@@ -1162,7 +1227,7 @@ server <- function(input, output, session) {
       ) %>%
       addLegend(
         pal = pal,
-        values = ~ `Policy Index Adj Time Mobility`,
+        values = ~ `Policy Index Adjusted for Time`,
         opacity = 0.7,
         title = NULL,
         position = "bottomright"

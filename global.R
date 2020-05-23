@@ -16,6 +16,9 @@ library(sp)
 
 mexico <- read_rds("./data/analysis.rds")
 
+latest <- max(mexico[ "Days Since the First Case (in Mexico)"])
+
+
 mexico_states <- read_rds("./geo/mexico_states.rds") 
 mexico_states <- sf::st_as_sf(mexico_states) %>% 
   mutate(ADMIN_NAME = case_when(ADMIN_NAME == "Mexico" ~ "Estado de México",
@@ -41,8 +44,8 @@ makeLimits <- function(data, x, grouping) {
               Largest = max({{x}}, na.rm=TRUE))
 }
 
-refIndexTimeMob <- makeLimits(mexico, 
-                              `Policy Index Adj Time Mobility`, 
+refIndexTime <- makeLimits(mexico, 
+                              `Policy Index Adjusted for Time`, 
                               `Days Since the First Case (in Mexico)`)
 
 

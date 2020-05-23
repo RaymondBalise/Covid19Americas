@@ -1,0 +1,136 @@
+---
+title: "Check on May 01 vs 15"
+author: "Raymond R Balise"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    df_print: kable
+    number_sections: false
+    toc: true
+    config:
+      toc:
+        collapse: 2
+    toc_depth: 4
+    toc_float: true
+    
+    theme: default
+    highlight: tango 
+---
+
+```{r setup}
+knitr::opts_chunk$set(echo = FALSE)
+library(conflicted)
+suppressMessages(conflict_prefer("filter", "dplyr"))
+suppressPackageStartupMessages(library(tidyverse))
+
+library(haven)
+library(compareDF)
+```
+
+```{r}
+
+
+oldFile  <- "covid-19 mayo 01 v2.dta"
+newFile <- "Covid-19 mayo 15 (clean).dta"
+
+  old <- read_stata(paste0("../data/", oldFile), encoding = "latin1") %>% 
+    select(-c( `Policy_Index_Adj_Time_Mobility`))
+  
+  new <- read_stata(paste0("../data/", newFile), encoding = "latin1") %>% 
+    select(-c(`Oxford_Index10`, `rank_daily2`, `accum_mobility_google`, 
+              `Days_rest_on_gatherings`, `GoogleNonEssential`, 
+              `Rest_on_gatherings`, `Use_face_masks`, 
+              `Days_since_stay_at_home`, `Stay_at_home`, `Days_use_face_mask`))
+```
+  
+# Check for variables with diffent names
+```{r}
+# https://bookdown.org/Maxine/r4ds/comparing-two-data-frames-tibbles.html
+  dplyr::all_equal(old, new)
+```
+  
+## Fixing names of variables  
+None reported
+```{r fixNames}  
+# no longer needed
+newRenamed <- new # %>% rename(`Icubeds` = `Icu_beds`) 
+```
+
+
+
+# Check variable attributes
+```{r checkAttributes}
+  dplyr::all_equal(old, newRenamed)
+```
+
+## Details on attribute discrepancies
+Variable names/labels have changed and the numeric percision has changed.
+
+```{r attributeDifs}
+
+  checkAttrs <- function(oldVar, newVar) {
+    
+    cat("OLD FILE:\n Attributes:\n")
+    print(attributes(oldVar))
+    #print(x)
+    cat("\n")
+    
+    cat("NEW FILE:\n Attributes:\n")
+    x <- attributes(newVar)
+    print(x)
+    cat("\n")
+    }
+
+issues <- c( "Mobility_Index" ,            
+"Hospital_Beds"               ,
+"Icubeds"                     ,
+"Icubeds_Per_Capita"          ,
+"Population"                  ,
+"pop2"                        ,
+"Policy_Index_Adjusted_Time"  ,
+"Policy_Index_Adjusted_Time2" )
+
+
+checker <- function(x) {
+  cat("###############################################\n")
+  cat(paste(x, "\n"))
+  checkAttrs(old[[x]], newRenamed[[x]])
+}
+
+walk(issues, checker)
+  
+  
+```
+
+## Erase attributes and check again
+```{r}
+old[] <- lapply(old, function(x) { attributes(x) <- NULL; x })
+newRenamed[] <- lapply(newRenamed, function(x) { attributes(x) <- NULL; x })
+
+dplyr::all_equal(old, newRenamed)
+```
+
+# Subset the new data to have only the old dates (same number of rows)
+```{r}
+oldDays <- max(old$Days)
+
+oldShouldMatch <- old %>%  
+    arrange(State_Code, Days ) %>% 
+    mutate(StateNameDays = paste0(State_Name, "~", Days))
+
+newShouldMatch <- newRenamed %>% 
+  filter(Days <= oldDays) %>% 
+  arrange(State_Code, Days ) %>% 
+  mutate(StateNameDays = paste0(State_Name, "~", Days))
+
+theDiffs <- dplyr::all_equal(oldShouldMatch, newShouldMatch)
+
+```
+
+# Identify the first 100 different records
+```{r varDiffs}
+varDiffs <- compareDF::compare_df(oldShouldMatch, newShouldMatch, c("StateNameDays"))
+create_output_table(varDiffs, limit = 100)
+```
+
+
