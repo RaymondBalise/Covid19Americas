@@ -34,18 +34,19 @@ library(ggthemes)
 
 # Index
 ```{r makeData}
-analysis <- read_rds("data/analysis.rds") %>% 
-  arrange(place, `Days Since the first case (in Mexico)`) %>% 
+analysis <- read_rds("../data/analysis.rds") %>% 
+  rename(place = `State Name`) %>% 
+  arrange(place, `Days Since the First Case (in Mexico)`) %>% 
   mutate(place = factor(place)) %>% 
   mutate(place = factor(place, levels = rev(levels(place))))
 
 ref <- analysis %>% 
-  filter(place %in% c("Chiapas", "Nuevo Leon")) %>% 
-  filter(!is.na(`Index Adjusted for Time`))
+  filter(place %in% c("Chiapas", "Nuevo León")) %>% 
+  filter(!is.na(`Policy Index Adjusted for Time`))
 
 place <- analysis %>% 
   filter(place %in% c("Veracruz")) %>% 
-  filter(!is.na(`Index Adjusted for Time`))
+  filter(!is.na(`Policy Index Adjusted for Time`))
 
 ```
 
@@ -55,28 +56,29 @@ place <- analysis %>%
 ggplot() + 
   theme_few(base_size = 25) +
   geom_line(data = place, 
-             aes(x=`Days Since the first case (in Mexico)`, 
-                 y = `Index Adjusted for Time`, group = place), color = "orange") +
+             aes(x=`Days Since the First Case (in Mexico)`, 
+                 y = `Policy Index Adjusted for Time`), color = "orange") +
   geom_line(data = ref, 
-             aes(x=`Days Since the first case (in Mexico)`, 
-                 y = `Index Adjusted for Time`, group = place), color = "gray") +
+             aes(x=`Days Since the First Case (in Mexico)`, 
+                 y = `Policy Index Adjusted for Time`, group = place), 
+            color = "gray") +
   geom_text(data = ref, x = 45, y = 15, label = "Chiapas", color = "gray") +
-  geom_text(data = ref, x = 44, y = 45, label = "Nuevo Leon", color = "gray") +
-  ylim (0, 45)
+  geom_text(data = ref, x = 44, y = 45, label = "Nuevo León", color = "gray") +
+  ylim (0, 70)
 
 ```
 
-# New cases
+# Daily Cases
 ```{r}
 ggplot() + 
   theme_few(base_size = 25) +
   geom_point(data = place, 
-             aes(x=`Days Since the first case (in Mexico)`, 
-                 y = `Cases per million inhabitants`, group = place), 
+             aes(x=`Days Since the First Case (in Mexico)`, 
+                 y = `Daily_Cases`, group = place), 
              color = "orange") +
   geom_smooth(data = ref, 
-             aes(x=`Days Since the first case (in Mexico)`, 
-                 y = `Cases per million inhabitants`, group = place, color = place),
+             aes(x=`Days Since the First Case (in Mexico)`, 
+                 y = `Daily_Cases`, group = place, color = place),
              method = 'loess',
              formula = 'y ~ x') 
 ```

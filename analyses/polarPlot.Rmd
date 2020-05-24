@@ -54,7 +54,6 @@ polar <- mexico %>%
                                        TRUE ~  Public_Transit_Suspended)) %>% 
   pivot_longer(-`State Name`, names_to = "Restriction", values_to = "amount") %>% 
   mutate(Restriction = case_when(Restriction == "Workplace_Closure" ~              "  Área\nlaboral  ",
-
                                  Restriction == "Information_Campaign" ~          "   Campaña\ninformativa",
                                  Restriction == "Internal_Travel_Control" ~       " Viajes\n    domésticos",
                                  Restriction == "International_Travel_Controls" ~ " Viajes\n inter.",
