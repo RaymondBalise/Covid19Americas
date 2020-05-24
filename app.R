@@ -735,7 +735,8 @@ server <- function(input, output, session) {
   output$summaryIndexPlot <- renderPlotly({
     gg <-
       mexico %>%
-      mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
+      mutate(`Policy Index Adj Time` = 
+               round(`Policy Index Adjusted for Time`, 1)) %>%
       ggplot() +
       #ggtitle("Policy Index Adjusted for Time") +
       geom_line(
