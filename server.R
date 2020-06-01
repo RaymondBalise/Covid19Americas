@@ -52,29 +52,44 @@ server <- function(input, output, session) {
   # Summary plots / Index ----
   
   output$summaryIndexPlot <- renderPlotly({
+    refIndexTime = pivot_longer(refIndexTime, cols = 2:4,
+                                names_to = "Group", values_to = "Value")
     gg <-
       mexico %>%
       mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
       ggplot() +
+      geom_line(
+        aes(
+          x = `Days Since the First Case (in Mexico)`,
+          y = `Policy Index Adj Time`,
+          group = `State Name`
+        ),
+        size = .3,
+        color = "grey"
+      ) +
       #ggtitle("Policy Index Adjusted for Time") +
       geom_line(
         data = refIndexTime, # fix this name
         aes(x = `Days Since the First Case (in Mexico)`,
-            y = Smallest),
-        color = "gray"
+            y = Value,
+            group = Group,
+            color = Group),
+        size = .6
       ) +
-      geom_line(
-        data = refIndexTime,
-        aes(x = `Days Since the First Case (in Mexico)`,
-            y = Average),
-        color = "black"
-      ) +
-      geom_line(
-        data = refIndexTime,
-        aes(x = `Days Since the First Case (in Mexico)`,
-            y = Largest),
-        color = "gray"
-      ) +
+      scale_color_manual(values = c("black", "dark blue", "red")) +
+      # geom_line(
+      #   data = refIndexTime,
+      #   aes(x = `Days Since the First Case (in Mexico)`,
+      #       y = Average),
+      #   color = "black"
+      # ) +
+      # geom_line(
+      #   data = refIndexTime,
+      #   aes(x = `Days Since the First Case (in Mexico)`,
+      #       y = Largest,
+      #       group = "Largest"),
+      #   color = "gray"
+      # ) +
       theme_few(base_size = 20) +
       theme(
         legend.title = element_blank(),
@@ -85,16 +100,7 @@ server <- function(input, output, session) {
         # get rid of legend bg
         legend.box.background = element_rect(fill = "transparent")
       ) +
-      geom_point(
-        aes(
-          x = `Days Since the First Case (in Mexico)`,
-          y = `Policy Index Adj Time`,
-          group = `State Name`,
-          color = `State Name`,
-          shape = 4,
-        ),
-        size = 2
-      ) +
+      
       scale_shape_identity() +
       xlab("Días desde el primer caso en México") +
       ylab("Índice de política")
