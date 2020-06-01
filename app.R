@@ -5,9 +5,9 @@ source("global.R")
 ui <- navbarPage(
   theme = shinytheme("simplex"),
   title = img(src = "flag.png", width = 70),
-  header = tags$head(includeHTML((
-    "google-analytics.html"
-  ))),
+  # header = tags$head(includeHTML((
+  #   "google-analytics.html"
+  # ))),
   windowTitle = "COVID-19 Mexico",
   # ++++++++++++++++++++++
   # TAB 1 : HOME PAGE ----
