@@ -51,32 +51,72 @@ server <- function(input, output, session) {
   })
   # Summary plots / Index ----
   
-  output$summaryIndexPlot <- renderPlotly({
+  d = reactive({
+    mexico %>% 
+      group_by(`State Name`) %>% 
+      summarise(deaths = sum(Deaths_Daily))
+  })
+  
+  output$summaryIndexTable = renderReactable({
+    reactable(
+      d(),
+      pagination = FALSE,
+      height = 380,
+      selection = "multiple",
+      defaultSelected = 1:32
+    )
+  })
+  
+  states = reactive({
+    getReactableState("summaryIndexTable", "selected")
+  })
+    
+  
+  output$summaryIndexPlot <- renderPlot({
+    
+    ## made 2 columns, one for group (smallest, avg & largest)
+    ## and the other for value from the 3 
+    ## this setup is suits ggplot well
+    ## will be transfered to global.R once confirmed
+    colors = c(rep("grey", 32), "#555555", "#1c2e4a", "#8B0000")
+    x = c(unique(mexico$`State Name`), "Average", "Largest", "Smallest")
+    names(colors) = x
+    
     refIndexTime = pivot_longer(refIndexTime, cols = 2:4,
                                 names_to = "Group", values_to = "Value")
+    
+    selected_states = d()$`State Name`[states()]
+    print(selected_states)
     gg <-
       mexico %>%
+      filter(`State Name` %in% selected_states) %>% 
       mutate(`Policy Index Adj Time` = round(`Policy Index Adjusted for Time`, 1)) %>%
       ggplot() +
       geom_line(
         aes(
           x = `Days Since the First Case (in Mexico)`,
           y = `Policy Index Adj Time`,
-          group = `State Name`
+          group = `State Name`,
+          color = `State Name`
         ),
-        size = .3,
-        color = "grey"
+        size = .8,
+        show.legend = FALSE
       ) +
+      scale_color_manual(values = rep("grey", 32)) +
       #ggtitle("Policy Index Adjusted for Time") +
+      ggnewscale::new_scale("color") +
       geom_line(
         data = refIndexTime, # fix this name
         aes(x = `Days Since the First Case (in Mexico)`,
             y = Value,
             group = Group,
             color = Group),
-        size = .6
+        size = 1,
+        show.legend = FALSE
       ) +
-      scale_color_manual(values = c("black", "dark blue", "red")) +
+      scale_color_manual(values = c("Average" = "#555555",
+                                    "Largest" = "#1c2e4a",
+                                    "Smallest" = "#8B0000")) +
       # geom_line(
       #   data = refIndexTime,
       #   aes(x = `Days Since the First Case (in Mexico)`,
@@ -105,8 +145,14 @@ server <- function(input, output, session) {
       xlab("Días desde el primer caso en México") +
       ylab("Índice de política")
     
-    
-    ggplotly(gg, tooltip = c("x", "y", "group"))
+    gg
+    #ggplotly(gg, tooltip = c("x", "y", "group"))
+  })
+  
+
+  
+  output$t2 = renderReactable({
+    head(iris)
   })
   
   mexico_latest <- mexico %>%

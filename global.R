@@ -13,6 +13,7 @@ library(ggthemes)
 library(shinydashboard)
 library(leaflet)
 library(sp)
+library(reactable)
 
 mexico <- read_rds("./data/analysis.rds")
 

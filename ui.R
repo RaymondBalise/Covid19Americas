@@ -157,8 +157,17 @@ ui <- navbarPage(
           align = "center"
         ),
         height = "500px",
-        tabPanel("Gráfico", width = 12,
-                 plotlyOutput("summaryIndexPlot")) #,
+        tabPanel(
+          "Gráfico", width = 12,
+          column(
+            width = 9,
+            plotOutput("summaryIndexPlot")
+          ),
+          column(
+            width = 3,
+            reactableOutput("summaryIndexTable")
+          )
+        ) #,
         #tabPanel("Tabla de datos", width = 12,
         #         dataTableOutput("index_table"))
       )
